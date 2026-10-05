@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英語の母音</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --panel:#FFFFFF; --ink:#1E2A33; --sub:#5A6873; --line:#C9D2D8; --shade:#E3EAEE;
+  --accent:#2F6FB0; --jp:#D9822B; --play:#A8323E; --outline:#6B7A85;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141A1F; --panel:#1C242B; --ink:#E6ECEF; --sub:#9AA8B2; --line:#34414B; --shade:#26313A;
+    --accent:#6FA6DE; --jp:#E9A15A; --play:#F07C87; --outline:#8E9CA6; }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;line-height:1.8}
+main{max-width:1040px;margin:0 auto;padding:28px 20px 48px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 16px;font-size:15px;max-width:46em}
+.ipa{font-family:"Doulos SIL","Charis SIL","Gentium Plus","Times New Roman",serif}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:14px;color:var(--sub);margin:0 0 18px}
+.bar label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.bar input{accent-color:var(--accent)}
+#status{min-height:1.5em}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h2{font-size:19px;margin:0 0 4px}
+.card h2 .ipa{font-weight:400;color:var(--accent)}
+.card p{margin:8px 0 0;font-size:14.5px;color:var(--sub)}
+.words{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.w{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.w button{font:inherit;color:var(--ink);background:transparent;border:none;padding:8px 14px;cursor:pointer;text-align:left;line-height:1.35}
+.w button:hover{background:var(--shade)}
+.w button:focus-visible,.w a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.w button.on{background:var(--ink);color:var(--panel)}
+.w button.on .ipa{color:var(--panel)}
+.w b{display:block;font-size:18px}
+.w .ipa{font-size:16px;color:var(--accent)}
+.w a{display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--sub);text-decoration:none;border-left:1px solid var(--line)}
+.w a:hover{background:var(--shade)}
+.sep{align-self:center;color:var(--sub)}
+.w .rec{font-size:12px;color:var(--sub);padding:0 10px;border-left:1px solid var(--line)}
+.w .rec.has{color:var(--play);font-weight:700}
+.w .rec.now{background:var(--play);color:#fff}
+.pair{font:inherit;font-size:13px;color:var(--sub);background:transparent;border:1px dashed var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;align-self:center}
+.pair:hover{border-color:var(--sub)}
+select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 4px;max-width:220px}
+.note{font-size:13px;color:var(--sub)}
+h3{font-size:20px;margin:30px 0 8px}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+svg text{fill:var(--ink);font-family:inherit}
+.v{cursor:pointer}
+.v:hover text{fill:var(--accent)}
+.fine{margin-top:22px;font-size:13px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>英語の母音</h1>
+  <p class="lead">日本語の5母音では区別されない英語の母音です。単語をクリックすると発音が再生されます。「辞書」を押すと Weblio 英和辞典のページが開きます。</p>
+
+  <div class="bar">
+    <span>音声：</span>
+    <label><input type="radio" name="src" value="rec" checked>自分の録音（なければ辞書→合成音声）</label>
+    <label><input type="radio" name="src" value="dict">辞書の録音（なければ合成音声）</label>
+    <label><input type="radio" name="src" value="tts">合成音声のみ</label>
+    <label>合成音声の声：<select id="voice"></select></label>
+  </div>
+  <p class="note" id="status" aria-live="polite" style="margin:-8px 0 14px">単語をクリックすると再生します。再生元がここに表示されます。</p>
+
+  <div class="grid" id="grid"></div>
+
+  <h3>母音図の上での位置（目安）</h3>
+  <div class="chart">
+    <svg id="chart" viewBox="0 0 400 290" role="img" aria-label="英語と日本語の母音の位置を示す母音図"></svg>
+    <p class="note" style="text-align:center;margin:4px 0 0">青：英語（アメリカ英語）の母音。クリックすると例の単語を再生します。　橙：日本語の母音。</p>
+  </div>
+
+  <p class="fine">IPA 表記はアメリカ英語を基準にしています。母音図の位置は話者や地域によって異なる目安です。辞書の録音は dictionaryapi.dev（Wiktionary 由来の音声）から取得するため、インターネット接続が必要です。取得できない単語は、ブラウザの英語の合成音声で読み上げます。「録音」ボタンで録った声は、このPCのこのブラウザの中だけに保存されます（別のPCやブラウザには引き継がれません）。</p>
+</main>
+<script>
+const ITEMS=[
+ {n:'①',t:'広いエ・狭いア・中舌のア',ipa:'[ɛ] [æ] [ʌ]',words:[['bed','bɛd'],['bad','bæd'],['bud','bʌd']],
+  p:'日本語ではエやアにまとめて聞こえる3つの母音。[æ]は[ɛ]より広い前舌母音。狭いエ＝半狭母音[e]、広いエ＝半広母音[ɛ]、さらに広いのが[æ]（準広）。'},
+ {n:'②',t:'張りのあるイ・ウと緩いイ・ウ',ipa:'[iː]/[ɪ]、[uː]/[ʊ]',words:[['sheep','ʃiːp'],['ship','ʃɪp'],null,['pool','puːl'],['pull','pʊl']],
+  p:'長さだけでなく音色（舌の位置）も違う。[ɪ]は少しエ寄りに、[ʊ]は少しオ寄りに聞こえる。'},
+ {n:'③',t:'後ろのア',ipa:'[ɑ] と [ʌ]',words:[['hot','hɑt'],['hut','hʌt']],
+  p:'アメリカ英語の hot は口を大きく開けた後舌の[ɑ]。①と合わせて、日本語の「ア」1つに英語の3〜4つの母音が対応する。'},
+ {n:'④',t:'r音色の母音',ipa:'[ɚ]',words:[['bird','bɚd'],['her','hɚ']],
+  p:'舌先を反らせた（または舌の奥を盛り上げた）まま出す母音。そり舌音[ʂ ʐ]とつながる。強勢のある場合は[ɝ]と書く流儀もある。'},
+ {n:'⑤',t:'シュワー（曖昧母音）',ipa:'[ə]',words:[['about','əbaʊt'],['pilot','paɪlət']],
+  p:'アクセントのない位置で現れる。about の最初の母音、pilot の2つ目の母音（第7回の復習）。'}
+];
+const grid=document.getElementById('grid');
+const btnByWord={},recByWord={};
+ITEMS.forEach(it=>{
+  const c=document.createElement('section');c.className='card';
+  c.innerHTML=`<h2>${it.n} ${it.t}　<span class="ipa">${it.ipa}</span></h2>`;
+  const ws=document.createElement('div');ws.className='words';
+  it.words.forEach((w,i)=>{
+    if(!w)return;
+    const d=document.createElement('span');d.className='w';
+    const b=document.createElement('button');b.type='button';
+    b.innerHTML=`<b>${w[0]}</b><span class="ipa">[${w[1]}]</span>`;
+    b.setAttribute('aria-label',`${w[0]} を再生`);
+    b.addEventListener('click',()=>play(w[0],b));
+    const a=document.createElement('a');a.href='https://ejje.weblio.jp/content/'+encodeURIComponent(w[0]);a.target='_blank';a.rel='noopener';a.textContent='辞書';
+    a.setAttribute('aria-label',`${w[0]} を Weblio で開く`);
+    const r=document.createElement('button');r.type='button';r.className='rec';r.textContent='録音';
+    r.setAttribute('aria-label',`${w[0]} を自分の声で録音`);r.addEventListener('click',()=>record(w[0],r));
+    d.append(b,r,a);ws.appendChild(d);btnByWord[w[0]]=b;recByWord[w[0]]=r;
+  });
+  const groups=[];let g=[];it.words.forEach(w=>{if(!w){groups.push(g);g=[];}else g.push(w[0]);});groups.push(g);
+  const pr=document.createElement('div');pr.className='words';pr.style.marginTop='8px';
+  groups.forEach(gr=>{const pb=document.createElement('button');pb.type='button';pb.className='pair';pb.textContent='▶ 聞き比べ：'+gr.join(' → ');
+    pb.addEventListener('click',()=>playSeq(gr));pr.appendChild(pb);});
+  c.appendChild(ws);c.appendChild(pr);
+  const p=document.createElement('p');p.textContent=it.p;c.appendChild(p);
+  grid.appendChild(c);
+});
+
+/* ---- 再生 ---- */
+const status=document.getElementById('status');
+const cache={};
+function src(){return document.querySelector('input[name=src]:checked').value;}
+/* 自分の録音（このPCのブラウザ内に保存） */
+let db=null;
+const dbReady=new Promise(res=>{try{const q=indexedDB.open('eng-vowels',1);q.onupgradeneeded=()=>q.result.createObjectStore('rec');
+  q.onsuccess=()=>{db=q.result;res();};q.onerror=()=>res();}catch(e){res();}});
+async function getRec(w){await dbReady;if(!db)return null;return new Promise(r=>{const t=db.transaction('rec').objectStore('rec').get(w);t.onsuccess=()=>r(t.result||null);t.onerror=()=>r(null);});}
+async function putRec(w,blob){await dbReady;if(!db)return;return new Promise(r=>{const t=db.transaction('rec','readwrite');t.objectStore('rec').put(blob,w);t.oncomplete=r;t.onerror=r;});}
+async function markRecs(){for(const w in recByWord){if(await getRec(w))recByWord[w].classList.add('has');}}
+markRecs();
+let mr=null,mrWord=null;
+async function record(word,btn){
+  if(mr){mr.stop();return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const chunks=[];mr=new MediaRecorder(stream);mrWord=word;
+    mr.ondataavailable=e=>chunks.push(e.data);
+    mr.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+      await putRec(word,blob);btn.classList.remove('now');btn.classList.add('has');btn.textContent='録音';mr=null;
+      status.textContent=`「${word}」を録音しました。もう一度「録音」を押すと録り直せます。`;};
+    mr.start();btn.classList.add('now');btn.textContent='停止';status.textContent=`「${word}」を録音中…　もう一度押すと停止します`;
+  }catch(e){status.textContent='マイクが使えません（ブラウザのマイク許可を確認してください）';mr=null;}
+}
+async function dictAudio(word){
+  if(word in cache)return cache[word];
+  try{
+    const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),4000);
+    const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(word),{signal:ctl.signal});
+    clearTimeout(to);if(!r.ok)throw 0;
+    const d=await r.json();
+    const re=new RegExp('/'+word+'-(us|uk|au|ca)?[^/]*\\.mp3$','i');
+    const list=[];d.forEach(e=>(e.phonetics||[]).forEach(p=>{if(p.audio&&re.test(p.audio))list.push(p.audio);}));
+    const pick=list.find(u=>/-us\.mp3$/.test(u))||list.find(u=>/-uk\.mp3$/.test(u))||list[0]||null;
+    const lab=pick?(/-us\./.test(pick)?'辞書の録音（アメリカ英語）':/-uk\./.test(pick)?'辞書の録音（イギリス英語）':'辞書の録音'):null;
+    return cache[word]=pick?{url:pick.startsWith('//')?'https:'+pick:pick,lab,file:pick.split('/').pop()}:null;
+  }catch(e){return cache[word]=null;}
+}
+const vsel=document.getElementById('voice');
+function fillVoices(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  const cur=vsel.value;vsel.innerHTML='';vs.forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=`${v.name}（${v.lang}）`;vsel.appendChild(o);});
+  const pref=vs.find(v=>v.name===cur)||vs.find(v=>v.lang==='en-US'&&/Samantha|Google US|Alex|Aria|Jenny/.test(v.name))||vs.find(v=>v.lang==='en-US');
+  if(pref)vsel.value=pref.name;}
+if('speechSynthesis' in window){fillVoices();speechSynthesis.onvoiceschanged=fillVoices;}
+function tts(word){
+  return new Promise(res=>{
+    if(!('speechSynthesis' in window)){status.textContent='このブラウザでは合成音声が使えません';res();return;}
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=0.8;
+    const v=speechSynthesis.getVoices().find(v=>v.name===vsel.value);if(v){u.voice=v;u.lang=v.lang;}
+    u.onend=res;u.onerror=res;speechSynthesis.speak(u);
+    status.textContent=`「${word}」合成音声（${v?v.name:'既定の声'}）`;
+  });
+}
+let audio=null;
+function playUrl(url){return new Promise(async(res,rej)=>{audio=new Audio(url);audio.onended=res;audio.onerror=rej;try{await audio.play();}catch(e){rej(e);}});}
+async function play(word,btn){
+  document.querySelectorAll('.w button.on').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(audio){audio.pause();audio=null;}
+  const mode=src();
+  try{
+    if(mode==='rec'){const blob=await getRec(word);
+      if(blob){const url=URL.createObjectURL(blob);status.textContent=`「${word}」自分の録音`;await playUrl(url);URL.revokeObjectURL(url);return;}}
+    if(mode!=='tts'){
+      status.textContent=`「${word}」を取得中…`;
+      const a=await dictAudio(word);
+      if(a){status.textContent=`「${word}」${a.lab}［${a.file}］`;await playUrl(a.url);return;}
+    }
+    await tts(word);
+  }catch(e){await tts(word);}
+  finally{btn&&btn.classList.remove('on');}
+}
+async function playSeq(words){for(const w of words){await play(w,btnByWord[w]);await new Promise(r=>setTimeout(r,500));}}
+
+/* ---- 母音図 ---- */
+const NS='http://www.w3.org/2000/svg';
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+const svg=document.getElementById('chart');
+const X0=60,X1=360,Y0=40,H=220,BL=X0+(X1-X0)/2;
+const pos=(h,b)=>{const y=Y0+(1-h)*H,fx=X0+(BL-X0)*(1-h);return [fx+b*(X1-fx),y];};
+const P=(h,b)=>pos(h,b).join(',');
+mk('path',{d:`M${P(1,0)} L${P(1,1)} L${P(0,1)} L${P(0,0)} Z`,fill:'none',stroke:'var(--outline)','stroke-width':1.3},svg);
+[.67,.33].forEach(h=>mk('line',{x1:pos(h,0)[0],y1:pos(h,0)[1],x2:pos(h,1)[0],y2:pos(h,1)[1],stroke:'var(--line)'},svg));
+mk('line',{x1:pos(1,.5)[0],y1:pos(1,.5)[1],x2:pos(0,.5)[0],y2:pos(0,.5)[1],stroke:'var(--line)'},svg);
+[['前舌',0],['中舌',.5],['後舌',1]].forEach(([s,b])=>{const t=mk('text',{x:pos(1,b)[0],y:Y0-16,'text-anchor':'middle','font-size':12,style:'fill:var(--sub)'},svg);t.textContent=s;});
+[['狭',1],['半狭',.67],['半広',.33],['広',0]].forEach(([s,h])=>{const t=mk('text',{x:pos(h,0)[0]-14,y:pos(h,0)[1]+4,'text-anchor':'end','font-size':12,style:'fill:var(--sub)'},svg);t.textContent=s;});
+const JP=[['イ',.86,.16],['エ',.52,.08],['ア',.03,.5],['オ',.52,.93],['ウ',.9,.72]];
+JP.forEach(([k,h,b])=>{const [x,y]=pos(h,b);mk('circle',{cx:x,cy:y,r:10,fill:'var(--jp)','fill-opacity':.15,stroke:'var(--jp)','stroke-width':1.2},svg);
+  const t=mk('text',{x,y:y+4,'text-anchor':'middle','font-size':11,style:'fill:var(--jp);font-weight:700'},svg);t.textContent=k;});
+const EN=[['i','sheep',.98,.04],['ɪ','ship',.8,.2],['ɛ','bed',.4,.1],['æ','bad',.14,.12],['ʌ','bud',.36,.66],['ɑ','hot',.06,.9,'L'],['ʊ','pull',.8,.72],['u','pool',.98,.96,'L'],['ə','about',.5,.5]];
+EN.forEach(([s,w,h,b,side])=>{const [x,y]=pos(h,b);const L=side==='L',dx=L?-6:6,an=L?'end':'start';const g=mk('g',{class:'v',tabindex:0,role:'button','aria-label':`${s}（${w}）を再生`},svg);
+  mk('circle',{cx:x,cy:y,r:3.2,fill:'var(--accent)'},g);
+  const t=mk('text',{x:x+dx,y:y-5,'text-anchor':an,'font-size':17,class:'ipa',style:'fill:var(--accent)'},g);t.textContent=s;
+  const t2=mk('text',{x:x+dx,y:y+13,'text-anchor':an,'font-size':10,style:'fill:var(--sub)'},g);t2.textContent=w;
+  const go=()=>play(w,btnByWord[w]);g.addEventListener('click',go);
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});
+</script>
+</body>
+</html>

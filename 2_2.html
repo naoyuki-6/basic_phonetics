@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>腹式呼吸と胸式呼吸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --panel:#FFFFFF; --ink:#1E2A33; --sub:#5A6873; --line:#C9D2D8;
+  --body:#F7F9FA; --body-stroke:#6B7A85; --lung:#E88A8A; --lung-stroke:#B6474F;
+  --dia:#9E2B38; --belly:#E7B04B; --rib:#7C8791; --accent:#2F6FB0;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141A1F; --panel:#1C242B; --ink:#E6ECEF; --sub:#9AA8B2; --line:#34414B;
+    --body:#222C34; --body-stroke:#8E9CA6; --lung:#C9676B; --lung-stroke:#E89A9D;
+    --dia:#F07C87; --belly:#D9A443; --rib:#9AA6B0; --accent:#6FA6DE; }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  line-height:1.8}
+main{max-width:1040px;margin:0 auto;padding:28px 20px 48px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 20px;font-size:15px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--ink);font-family:inherit}
+.cap{font-size:13px;fill:var(--sub)}
+.ttl{font-size:20px;font-weight:700}
+.sub{font-size:13px;fill:var(--sub)}
+.leader{stroke:var(--sub);stroke-width:.7;stroke-dasharray:3 3}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:10px;font-size:14px;color:var(--sub)}
+button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);
+  border-radius:8px;padding:6px 14px;cursor:pointer;min-width:96px}
+button:hover{border-color:var(--sub)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range]{flex:1;min-width:140px;accent-color:var(--accent)}
+.meter{flex-basis:100%;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.meter div{height:100%;width:0;background:var(--accent)}
+.phase{font-weight:700;color:var(--ink);min-width:9em}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:28px}
+.notes section{border-top:3px solid var(--line);padding-top:10px}
+.notes section.ab{border-top-color:var(--belly)}
+.notes section.th{border-top-color:var(--lung)}
+.notes h2{font-size:18px;margin:0 0 6px}
+.notes p{margin:0;font-size:15px}
+.fine{margin-top:22px;font-size:13px;color:var(--sub)}
+kbd{font-family:inherit;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <h1>腹式呼吸と胸式呼吸</h1>
+  <p class="lead">体を横から見た模式図です。左右は同じタイミングで呼吸しています。どこが動き、どこが動かないかを比べてみましょう。</p>
+
+  <div class="stage">
+    <svg viewBox="0 0 680 400" role="img" aria-labelledby="st sd">
+      <title id="st">腹式呼吸と胸式呼吸の比較アニメーション</title>
+      <desc id="sd">腹式では横隔膜が下がり腹壁が前に出る。胸式では肋骨が持ち上がり胸郭が前に広がり、お腹はわずかに引っ込む。</desc>
+      <text class="ttl" x="120" y="26" text-anchor="middle">腹式呼吸</text>
+      <text class="sub" x="120" y="46" text-anchor="middle">横隔膜が主役</text>
+      <text class="ttl" x="460" y="26" text-anchor="middle">胸式呼吸</text>
+      <text class="sub" x="460" y="46" text-anchor="middle">外肋間筋が主役</text>
+      <line x1="340" y1="62" x2="340" y2="360" stroke="var(--line)" stroke-width="1"/>
+      <g id="fig0"></g>
+      <g id="fig1"></g>
+    </svg>
+    <div class="controls">
+      <button id="pp" type="button">一時停止</button>
+      <span class="phase" id="phase" aria-live="polite">吸気（息を吸う）</span>
+      <label for="spd">1呼吸の長さ</label>
+      <input type="range" id="spd" min="2" max="8" step="1" value="4">
+      <span id="spdv" style="min-width:3em">4 秒</span>
+      <div class="meter" aria-hidden="true"><div id="bar"></div></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <section class="ab">
+      <h2>腹式呼吸</h2>
+      <p>横隔膜が収縮してドームが下がり、胸腔が縦に広がります。押し下げられた内臓の分だけ腹壁が前に出ます。胸まわりはほとんど動きません。</p>
+    </section>
+    <section class="th">
+      <h2>胸式呼吸</h2>
+      <p>外肋間筋が肋骨を引き上げ、胸郭が前後・左右に広がります。横隔膜の動きは小さく、お腹はむしろ少し引っ込みます。</p>
+    </section>
+    <section>
+      <h2>発話とのつながり</h2>
+      <p>声は呼気の上に乗っています。安静時は吸気と呼気がおよそ1対1.5ですが、発話中は吸気が短く呼気が長く（1対8〜10ほど）なります。</p>
+    </section>
+  </div>
+  <p class="fine">実際の呼吸は多くの場合この2つの混合型です。図は違いを見せるために両極端を描いた模式図で、横隔膜の形なども単純化しています。<kbd>Space</kbd> で再生・一時停止できます。</p>
+</main>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function mk(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+const figs=[0,1].map(i=>{
+  const g=document.getElementById('fig'+i), ox=i*340;
+  const body=mk('path',{fill:'var(--body)',stroke:'var(--body-stroke)','stroke-width':'1.4'},g);
+  const belly=mk('path',{fill:'var(--belly)','fill-opacity':'0.28',stroke:'none'},g);
+  const lung=mk('path',{fill:'var(--lung)','fill-opacity':'0.6',stroke:'var(--lung-stroke)','stroke-width':'1'},g);
+  const ribs=[0,1,2,3].map(()=>mk('line',{stroke:'var(--rib)','stroke-width':'2.2','stroke-linecap':'round',opacity:'0.8'},g));
+  const dia=mk('path',{fill:'none',stroke:'var(--dia)','stroke-width':'3.2','stroke-linecap':'round'},g);
+  [['肋骨',95,150,100],['肺',145,115,150],['横隔膜',215,135,212],['腹壁',290,178,292]].forEach(([t,ly,px,py])=>{
+    mk('line',{class:'leader',x1:ox+px,y1:py,x2:ox+232,y2:ly-4},g);
+    mk('circle',{cx:ox+px,cy:py,r:2.2,fill:'var(--sub)'},g);
+    mk('text',{class:'cap',x:ox+238,y:ly},g).textContent=t;
+  });
+  return {ox,body,belly,lung,ribs,dia,ab:i===0};
+});
+function draw(br){
+  figs.forEach(f=>{
+    const o=f.ox, ab=f.ab;
+    const c=ab?4*br:16*br, b=ab?24*br:-3*br, dY=215+(ab?30*br:6*br), sh=ab?0:4*br, slope=ab?24-3*br:24-14*br;
+    f.body.setAttribute('d',`M${o+40},${55-sh} L${o+130},${55-sh} Q${o+188+c},135 ${o+166+b*0.4},228 Q${o+182+b},292 ${o+150},348 L${o+40},348 Z`);
+    f.belly.setAttribute('d',`M${o+166+b*0.4},${dY+12} Q${o+182+b},292 ${o+150},346 L${o+60},346 L${o+60},${dY+14} Z`);
+    const fx=o+150+c*0.85;
+    f.lung.setAttribute('d',`M${o+60},${dY+8} L${o+58},${102-sh} Q${o+78},${72-sh} ${o+108},${74-sh} Q${fx},84 ${fx+2},${dY-4} Q${o+108},${dY-38} ${o+60},${dY+8} Z`);
+    f.dia.setAttribute('d',`M${o+48},${dY+14} Q${o+106},${dY-40} ${o+160+c*0.6},${dY+4}`);
+    f.ribs.forEach((r,k)=>{const y=90+k*28-sh*(1-k*0.2);
+      r.setAttribute('x1',o+46);r.setAttribute('y1',y);r.setAttribute('x2',o+156+c*0.9-k*4);r.setAttribute('y2',y+slope);});
+  });
+}
+const pp=document.getElementById('pp'), spd=document.getElementById('spd');
+let playing=!matchMedia('(prefers-reduced-motion: reduce)').matches, t0=performance.now(), off=0;
+function setBtn(){pp.textContent=playing?'一時停止':'再生';}
+function toggle(){playing=!playing;t0=performance.now();setBtn();}
+pp.addEventListener('click',toggle);
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();toggle();}});
+spd.addEventListener('input',()=>{document.getElementById('spdv').textContent=spd.value+' 秒';});
+setBtn();
+function loop(now){
+  if(playing) off+=(now-t0)/1000; t0=now;
+  const P=+spd.value, ph=(off%P)/P, br=(1-Math.cos(2*Math.PI*ph))/2;
+  draw(br);
+  const label=ph<0.5?'吸気（息を吸う）':'呼気（息を吐く）';
+  const pe=document.getElementById('phase'); if(pe.textContent!==label) pe.textContent=label;
+  document.getElementById('bar').style.width=Math.round(br*100)+'%';
+  requestAnimationFrame(loop);
+}
+draw(0); requestAnimationFrame(loop);
+</script>
+</body>
+</html>

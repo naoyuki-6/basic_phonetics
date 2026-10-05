@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>母音図と舌の位置</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --panel:#FFFFFF; --ink:#1E2A33; --sub:#5A6873; --line:#C9D2D8; --shade:#E3EAEE;
+  --flesh:#E8959A; --flesh-stroke:#A8323E; --palate:#F3D2D3; --teeth:#FFFFFF; --outline:#6B7A85; --mouth:#4A2227;
+  --accent:#2F6FB0; --jp:#D9822B;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141A1F; --panel:#1C242B; --ink:#E6ECEF; --sub:#9AA8B2; --line:#34414B; --shade:#26313A;
+    --flesh:#C9676B; --flesh-stroke:#F0A0A6; --palate:#4A3336; --teeth:#DDE3E7; --outline:#8E9CA6; --mouth:#0B0D0F;
+    --accent:#6FA6DE; --jp:#E9A15A; }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  line-height:1.8}
+main{max-width:1040px;margin:0 auto;padding:28px 20px 48px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 20px;font-size:15px;max-width:46em}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+svg text{fill:var(--ink);font-family:inherit}
+.ipa{font-family:"Doulos SIL","Charis SIL","Gentium Plus","Times New Roman",serif}
+.cap{font-size:12px;fill:var(--sub)}
+.sym{font-size:19px;cursor:pointer}
+.sym:hover{fill:var(--accent)}
+.kana{cursor:pointer}
+.handle{cursor:grab}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:10px;font-size:14px;color:var(--sub)}
+button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--sub)}
+button[aria-pressed=true]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex}
+.seg button{border-radius:0;min-width:72px}
+.seg button:first-child{border-radius:8px 0 0 8px}
+.seg button:last-child{border-radius:0 8px 8px 0;border-left:none}
+label.chk{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+label.chk input{accent-color:var(--accent);width:16px;height:16px}
+.note{font-size:13px;color:var(--sub);margin:8px 0 0}
+h2{font-size:22px;margin:36px 0 10px}
+h3{font-size:17px;margin:0 0 4px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{font-weight:700;background:var(--shade)}
+tbody th{font-weight:700;white-space:nowrap}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:8px}
+.points section{border-top:3px solid var(--line);padding-top:10px}
+.points p{margin:0;font-size:15px}
+.fine{margin-top:26px;font-size:13px;color:var(--sub)}
+kbd{font-family:inherit;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <h1>母音図と舌の位置</h1>
+  <p class="lead">母音図の点は、舌の盛り上がりが一番高いところ（舌の最高点）の位置を表します。左の母音図で記号をクリックするか青い点をドラッグすると、右の断面図の舌、あご、唇が連動して動きます。</p>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 680 440" role="img" aria-labelledby="st sd">
+      <title id="st">母音図と舌の位置の連動</title>
+      <desc id="sd">左にIPAの母音図、右に頭部の矢状断面図。母音図上の点を動かすと、舌の最高点の高さと前後の位置、あごの開き、唇の丸めが変わる。左下に正面から見た唇の形を示す。</desc>
+      <g id="chart"></g>
+      <g id="sag" transform="translate(352,18)"></g>
+      <g id="info"></g>
+    </svg>
+    <div class="controls">
+      <span class="seg" role="group" aria-label="唇の丸め">
+        <button type="button" id="ru">非円唇</button><button type="button" id="rr">円唇</button>
+      </span>
+      <label class="chk"><input type="checkbox" id="jp" checked>日本語の母音を表示</label>
+      <button type="button" id="seqJ">イ→エ→ア→オ→ウ</button>
+      <button type="button" id="seqC">第一次基本母音 1→8</button>
+    </div>
+    <p class="note">円唇・非円唇は舌の位置とは独立に切り替えられます。[i] のまま円唇にすると [y]、[u] のまま非円唇にすると [ɯ] になります。</p>
+  </div>
+
+  <h2>母音の三大要素と図の対応</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>要素</th><th>母音図での表し方</th><th>断面図で見えること</th></tr></thead>
+      <tbody>
+        <tr><th>舌の高さ（口の開き）</th><td>縦方向。上が狭母音、下が広母音</td><td>舌の最高点が上あごに近いか遠いか。あごの開きもほぼ連動する</td></tr>
+        <tr><th>舌の前後位置</th><td>横方向。左が前舌、右が後舌</td><td>最高点が硬口蓋の下にあるか、軟口蓋の下にあるか</td></tr>
+        <tr><th>円唇性</th><td>点の左が非円唇、右が円唇</td><td>唇の突き出しと、正面から見た開口部の形</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>日本語（共通語）の母音</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>母音</th><th>表記の例</th><th>特徴</th></tr></thead>
+      <tbody>
+        <tr><th>イ</th><td class="ipa">[i]</td><td>基本母音 [i] に近い。非円唇の前舌狭母音</td></tr>
+        <tr><th>エ</th><td class="ipa">[e̞]</td><td>半狭 [e] と半広 [ɛ] のあいだ。下寄りの補助記号 [ ̞] を付ける</td></tr>
+        <tr><th>ア</th><td class="ipa">[ä]（[a] とも）</td><td>前舌と後舌のあいだ、中舌寄りの広母音。中舌寄りの補助記号 [ ̈] を付ける</td></tr>
+        <tr><th>オ</th><td class="ipa">[o̞]</td><td>半狭 [o] と半広 [ɔ] のあいだ。円唇だが丸めは弱い</td></tr>
+        <tr><th>ウ</th><td class="ipa">[ɯ]（[ɯ̹] [ɯ̟] とも）</td><td>後舌よりやや前寄り。唇を突き出さず、上下から軽くすぼめる（「圧縮」）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>アニメーションの見どころ</h2>
+  <div class="points">
+    <section>
+      <h3>狭母音から広母音へ</h3>
+      <p>[i] から [a] へ下げていくと、舌が下がるのと一緒にあごも開きます。「舌の高さ」と「口の開き」がほぼ同じ意味で使われるのはこのためです。</p>
+    </section>
+    <section>
+      <h3>前舌と後舌</h3>
+      <p>[i] では舌の前の部分が硬口蓋に、[u] では後ろの部分が軟口蓋に近づきます。どちらも狭母音ですが、盛り上がる場所が違います。もっと近づけると、それぞれ硬口蓋摩擦音、軟口蓋摩擦音になります。</p>
+    </section>
+    <section>
+      <h3>日本語の5母音の位置</h3>
+      <p>日本語のエとオは基本母音の半狭と半広のあいだにあり、ウは基本母音の [u] よりも前寄りで、丸めも弱くなります。基本母音と補助記号を組み合わせて記述する理由がここにあります。</p>
+    </section>
+    <section>
+      <h3>ポッキー実験とのつながり</h3>
+      <p>授業の内省実験で確かめた「イ＞エ＞ア＞オ＞ウ」の順番を、「イ→エ→ア→オ→ウ」ボタンで再生して、舌の最高点がどう動くかを見てみましょう。</p>
+    </section>
+  </div>
+
+  <p class="fine">図は模式図です。舌の形、あごの開き、唇の丸めは単純化しています。母音図は「舌の最高点」を目安にした図で、実際の舌の位置と完全に一致するわけではありません（音響的には第1フォルマントが舌の高さ、第2フォルマントが前後位置とよく対応します）。</p>
+</main>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function txt(s,a,p){const e=mk('text',a,p);e.textContent=s;return e;}
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), lerp=(a,b,u)=>a+(b-a)*u;
+
+/* ---------- 母音図 ---------- */
+const CX0=58,CX1=318,CY0=74,CH=195,BLX=CX0+(CX1-CX0)/2;
+function pos(h,b){const y=CY0+(1-h)*CH,fx=lerp(CX0,BLX,1-h);return [fx+b*(CX1-fx),y];}
+function inv(x,y){const h=clamp(1-(y-CY0)/CH,0,1),fx=lerp(CX0,BLX,1-h);return [h,clamp((x-fx)/(CX1-fx),0,1)];}
+const HN=[[1,'狭'],[.83,'準狭'],[.67,'半狭'],[.5,'中央'],[.33,'半広'],[.17,'準広'],[0,'広']];
+const BN=[[0,'前舌'],[.22,'準前舌'],[.5,'中舌'],[.78,'準後舌'],[1,'後舌']];
+const near=(arr,v)=>arr.reduce((a,c)=>Math.abs(c[0]-v)<Math.abs(a[0]-v)?c:a)[1];
+const V=[ // 記号, h, b, 円唇, 基本母音番号
+ ['i',1,0,0,1],['y',1,0,1,9],['ɨ',1,.5,0],['ʉ',1,.5,1],['ɯ',1,1,0,16],['u',1,1,1,8],
+ ['ɪ',.83,.22,0],['ʏ',.83,.22,1],['ʊ',.83,.78,1],
+ ['e',.67,0,0,2],['ø',.67,0,1,10],['ɘ',.67,.5,0],['ɵ',.67,.5,1],['ɤ',.67,1,0,15],['o',.67,1,1,7],
+ ['ə',.5,.5,0],
+ ['ɛ',.33,0,0,3],['œ',.33,0,1,11],['ɜ',.33,.5,0],['ɞ',.33,.5,1],['ʌ',.33,1,0,14],['ɔ',.33,1,1,6],
+ ['æ',.17,0,0],['ɐ',.17,.5,0],
+ ['a',0,0,0,4],['ɶ',0,0,1,12],['ɑ',0,1,0,5],['ɒ',0,1,1,13]
+];
+const JP=[['イ','i',.92,.1,0],['エ','e̞',.52,.08,0],['ア','ä',.03,.5,0],['オ','o̞',.52,.93,.65],['ウ','ɯ',.9,.72,.25]];
+const chart=document.getElementById('chart');
+const OUT='var(--outline)';
+// 枠
+const P=(h,b)=>pos(h,b).join(',');
+mk('path',{d:`M${P(1,0)} L${P(1,1)} L${P(0,1)} L${P(0,0)} Z`,fill:'none',stroke:OUT,'stroke-width':'1.4'},chart);
+[.67,.33].forEach(h=>mk('line',{x1:pos(h,0)[0],y1:pos(h,0)[1],x2:pos(h,1)[0],y2:pos(h,1)[1],stroke:OUT,'stroke-width':'1'},chart));
+mk('line',{x1:pos(1,.5)[0],y1:pos(1,.5)[1],x2:pos(0,.5)[0],y2:pos(0,.5)[1],stroke:OUT,'stroke-width':'1'},chart);
+[['前舌',0],['中舌',.5],['後舌',1]].forEach(([s,b])=>txt(s,{class:'cap',x:pos(1,b)[0],y:CY0-22,'text-anchor':'middle'},chart));
+[['狭',1],['半狭',.67],['半広',.33],['広',0]].forEach(([s,h])=>txt(s,{class:'cap',x:pos(h,0)[0]-26,y:pos(h,0)[1]+4,'text-anchor':'end'},chart));
+// 日本語マーカー（下層）
+const jpG=mk('g',{},chart);
+JP.forEach(j=>{const [x,y]=pos(j[2],j[3]);const g=mk('g',{class:'kana',tabindex:0,role:'button','aria-label':'日本語の'+j[0]},jpG);
+  mk('circle',{cx:x,cy:y,r:11,fill:'var(--jp)','fill-opacity':.18,stroke:'var(--jp)','stroke-width':'1.4'},g);
+  txt(j[0],{x,y:y+4.5,'text-anchor':'middle',style:'font-size:12px;font-weight:700;fill:var(--jp)'},g);
+  g.addEventListener('click',()=>{stopSeq();goJP(j);});
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();stopSeq();goJP(j);}});
+});
+// 記号
+const symEls=[];
+V.forEach(v=>{const [s,h,b,r]=v;let [x,y]=pos(h,b);
+  const pair=V.some(o=>o!==v&&o[1]===h&&o[2]===b);
+  if(pair)mk('circle',{cx:x,cy:y,r:2.6,fill:'var(--ink)'},chart);
+  let tx=x,anc='middle';
+  if(pair){tx=r?x+7:x-7;anc=r?'start':'end';}
+  const e=txt(s,{class:'ipa sym',x:tx,y:y+6,'text-anchor':anc,tabindex:0,role:'button','aria-label':s},chart);
+  e.addEventListener('click',()=>{stopSeq();go(h,b,r,null);});
+  e.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();stopSeq();go(h,b,r,null);}});
+  symEls.push([v,e]);
+});
+const handle=mk('circle',{class:'handle',r:9,fill:'var(--accent)','fill-opacity':.35,stroke:'var(--accent)','stroke-width':'2'},chart);
+
+/* ---------- 断面図 ---------- */
+const sag=document.getElementById('sag');
+mk('path',{d:'M62,100 Q92,80 150,84 L282,86 Q314,88 318,112',fill:'none',stroke:OUT,'stroke-width':'1.3'},sag);
+mk('path',{d:'M318,112 Q324,200 320,300 L318,405',fill:'none',stroke:OUT,'stroke-width':'1.3'},sag);
+mk('path',{d:'M97,192 Q103,182 112,179 Q120,176 128,177 Q185,150 240,158 L240,146 Q180,138 120,156 Q92,164 66,168 L84,188 Z',fill:'var(--palate)',stroke:OUT,'stroke-width':'1.2'},sag);
+mk('path',{d:'M76,40 Q66,80 62,100 L38,150 Q34,160 44,164 L66,168',fill:'none',stroke:OUT,'stroke-width':'1.5','stroke-linejoin':'round'},sag);
+const upLip=mk('path',{fill:'none',stroke:OUT,'stroke-width':'1.5','stroke-linejoin':'round'},sag);
+const loLip=mk('path',{fill:'none',stroke:OUT,'stroke-width':'1.5','stroke-linejoin':'round'},sag);
+mk('path',{d:'M85,188 L97,190 L97,213 L89,215 Z',fill:'var(--teeth)',stroke:OUT,'stroke-width':'1.1'},sag);
+const loTeeth=mk('path',{d:'M85,217 L93,217 L99,241 L88,243 Z',fill:'var(--teeth)',stroke:OUT,'stroke-width':'1.1'},sag);
+mk('path',{d:'M290,380 L290,405 M318,380 L318,405',stroke:OUT,'stroke-width':'1.3',fill:'none'},sag);
+mk('path',{d:'M284,322 Q290,300 300,290',stroke:OUT,'stroke-width':'2.2',fill:'none','stroke-linecap':'round'},sag);
+mk('path',{d:'M240,152 Q282,132 312,140',fill:'none',stroke:'var(--flesh)','stroke-width':'13','stroke-linecap':'round'},sag);
+const tongue=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1.2','stroke-linejoin':'round'},sag);
+const peak=mk('circle',{r:5,fill:'var(--accent)',stroke:'var(--panel)','stroke-width':'1.5'},sag);
+const lab=(s,x,y,a)=>txt(s,Object.assign({class:'cap',x,y},a||{}),sag);
+lab('硬口蓋',180,135,{'text-anchor':'middle'});
+lab('軟口蓋',276,120,{'text-anchor':'middle'});
+lab('鼻腔',180,108,{'text-anchor':'middle'});
+lab('咽頭',300,360,{'text-anchor':'middle'});
+txt('横から見た断面',{class:'cap',x:170,y:14,'text-anchor':'middle'},sag);
+
+const PAL=[[100,190],[120,178],[150,167],[180,160],[210,157],[240,159],[265,152],[290,149]];
+function palY(x){for(let i=0;i<PAL.length-1;i++){if(x<=PAL[i+1][0]){const u=(x-PAL[i][0])/(PAL[i+1][0]-PAL[i][0]);return lerp(PAL[i][1],PAL[i+1][1],clamp(u,0,1));}}return PAL[PAL.length-1][1];}
+function cr(p){let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
+  d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;}return d;}
+
+function crc(p){const n=p.length,g=i=>p[(i+n)%n];let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<n;i++){const p0=g(i-1),p1=g(i),p2=g(i+1),p3=g(i+2);
+  d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;}return d+'Z';}
+/* ---------- 情報パネル・唇（正面） ---------- */
+const info=document.getElementById('info');
+mk('line',{x1:20,y1:300,x2:330,y2:300,stroke:'var(--line)'},info);
+txt('唇（正面）',{class:'cap',x:72,y:322,'text-anchor':'middle'},info);
+const lipO=mk('ellipse',{cx:72,cy:372,fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},info);
+const lipI=mk('ellipse',{cx:72,cy:372,fill:'var(--mouth)'},info);
+const iSym=txt('',{class:'ipa',x:170,y:360,'text-anchor':'middle',style:'font-size:46px'},info);
+const iNear=txt('',{class:'cap',x:170,y:384,'text-anchor':'middle'},info);
+const iName=txt('',{x:214,y:334,style:'font-size:14px;font-weight:700'},info);
+const iH=txt('',{class:'cap',x:214,y:358},info);
+const iB=txt('',{class:'cap',x:214,y:378},info);
+const iR=txt('',{class:'cap',x:214,y:398},info);
+const iJ=txt('',{x:214,y:422,style:'font-size:13px;font-weight:700;fill:var(--jp)'},info);
+
+/* ---------- 状態 ---------- */
+let cur={h:1,b:0,r:0},tgt={h:1,b:0,r:0},jpSel=null;
+function go(h,b,r,j){tgt={h,b,r};jpSel=j||null;setRBtns();}
+function goJP(j){go(j[2],j[3],j[4],j);}
+const ru=document.getElementById('ru'),rr=document.getElementById('rr');
+function setRBtns(){ru.setAttribute('aria-pressed',tgt.r<.5);rr.setAttribute('aria-pressed',tgt.r>=.5);}
+ru.addEventListener('click',()=>{stopSeq();tgt.r=0;jpSel=null;setRBtns();});
+rr.addEventListener('click',()=>{stopSeq();tgt.r=1;jpSel=null;setRBtns();});
+document.getElementById('jp').addEventListener('change',e=>{jpG.style.display=e.target.checked?'':'none';});
+
+// ドラッグ
+const svg=document.getElementById('svg');let drag=false;
+function toSvg(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+function inChart(p){return p.x>CX0-30&&p.x<CX1+30&&p.y>CY0-30&&p.y<CY0+CH+24;}
+svg.addEventListener('pointerdown',e=>{const p=toSvg(e);if(e.target===handle||(inChart(p)&&!e.target.classList.contains('sym')&&!e.target.closest('.kana'))){
+  drag=true;stopSeq();svg.setPointerCapture(e.pointerId);const [h,b]=inv(p.x,p.y);tgt.h=h;tgt.b=b;jpSel=null;}});
+svg.addEventListener('pointermove',e=>{if(!drag)return;const p=toSvg(e);const [h,b]=inv(p.x,p.y);tgt.h=h;tgt.b=b;cur.h=h;cur.b=b;jpSel=null;});
+svg.addEventListener('pointerup',()=>{drag=false;});
+svg.addEventListener('pointercancel',()=>{drag=false;});
+
+// 連続再生
+let seq=null,seqI=0,seqT=0;
+const btnJ=document.getElementById('seqJ'),btnC=document.getElementById('seqC');
+const CARD=[1,2,3,4,5,6,7,8].map(n=>V.find(v=>v[4]===n));
+function startSeq(kind){if(seq===kind){stopSeq();return;}seq=kind;seqI=0;seqT=0;step();
+  btnJ.setAttribute('aria-pressed',kind==='J');btnC.setAttribute('aria-pressed',kind==='C');}
+function stopSeq(){seq=null;btnJ.setAttribute('aria-pressed',false);btnC.setAttribute('aria-pressed',false);}
+function step(){if(seq==='J'){goJP(JP[seqI%5]);}else{const v=CARD[seqI%8];go(v[1],v[2],v[3],null);}seqI++;}
+btnJ.addEventListener('click',()=>startSeq('J'));btnC.addEventListener('click',()=>startSeq('C'));
+setRBtns();
+
+function nameOf(h,b,r){return (r>=.5?'円唇':'非円唇')+near(BN,b)+near(HN,h)+'母音';}
+function render(){
+  const {h,b,r}=cur;
+  // 母音図の点
+  const [px,py]=pos(h,b);handle.setAttribute('cx',px);handle.setAttribute('cy',py);
+  // 舌
+  const jaw=(1-h)*18;
+  const hx=148+b*112,hy=lerp(palY(hx)+11,240,1-h);
+  const tip=[106,228+jaw];
+  const rootX=Math.min(304,270+(1-h)*b*32+b*h*14);
+  const pF=lerp(.5,1.35,b),up=[];
+  [.3,.6,.82].forEach(u=>{const x=lerp(tip[0],hx,u);let y=tip[1]+(hy-tip[1])*Math.pow(u,pF);y=Math.max(y,palY(x)+7);up.push([x,y]);});
+  const back=[];
+  [.35,.7].forEach(u=>{const a=u*Math.PI/2;back.push([hx+(rootX-hx)*Math.sin(a),hy+(292-hy)*(1-Math.cos(a))]);});
+  const loop=[tip,...up,[hx,hy],...back,[rootX,292],[rootX-3,316],[272,338],[215,306+jaw*.5],[150,287+jaw],[112,262+jaw]];
+  tongue.setAttribute('d',crc(loop));
+  peak.setAttribute('cx',hx);peak.setAttribute('cy',hy-1);
+  // 唇（横）
+  const pr=r*16,cl=r*(jaw*.4+3);
+  upLip.setAttribute('d',`M66,168 Q${60-pr*.6},184 ${58-pr},196 Q${57-pr},${206+cl} ${70-pr*.5},${208+cl} L86,210`);
+  const J=jaw;
+  loLip.setAttribute('d',`M86,${219+J} L${70-pr*.5},${219+J-cl} Q${57-pr},${221+J-cl} ${60-pr},${234+J} Q63,${246+J} 74,${250+J} Q66,${262+J} 70,${284+J} Q78,${302+J} 104,${302+J} L170,${302+J*.6} Q205,305 232,340 L250,405`);
+  loTeeth.setAttribute('transform',`translate(0,${J.toFixed(1)})`);
+  // 唇（正面）
+  const w=lerp(58,22,r),hg=4+(1-h)*28*(1-.35*r)+r*5;
+  lipI.setAttribute('rx',(w/2).toFixed(1));lipI.setAttribute('ry',(hg/2).toFixed(1));
+  lipO.setAttribute('rx',(w/2+14).toFixed(1));lipO.setAttribute('ry',(hg/2+13).toFixed(1));
+  // 情報
+  let best=null,bd=1e9;V.forEach(v=>{if((v[3]>=.5)!==(r>=.5))return;const q=pos(v[1],v[2]);const d=Math.hypot(q[0]-px,q[1]-py);if(d<bd){bd=d;best=v;}});
+  if(jpSel){iSym.textContent=jpSel[1];iNear.textContent='日本語の「'+jpSel[0]+'」';}
+  else{iSym.textContent=best[0];iNear.textContent=bd>12?'（この記号に近い）':'';}
+  iName.textContent=jpSel?nameOf(h,b,r):(bd<=12?nameOf(best[1],best[2],best[3]):nameOf(h,b,r));
+  iH.textContent='舌の高さ：'+near(HN,h)+'（口の開き '+(h>.75?'小':h>.4?'中':'大')+'）';
+  iB.textContent='舌の前後：'+near(BN,b);
+  iR.textContent='唇：'+(r>=.5?'丸める（円唇）':r>.15?'弱くすぼめる':'丸めない（非円唇）');
+  const cn=best&&bd<=6&&best[4]&&!jpSel?'基本母音 '+best[4]+' 番':'';
+  iJ.textContent=cn;
+  symEls.forEach(([v,e])=>e.style.fill=(!jpSel&&v===best&&bd<=6)?'var(--accent)':'');
+}
+let last=performance.now();
+function frame(now){
+  const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;
+  if(!drag){const k=1-Math.exp(-dt*7);cur.h+=(tgt.h-cur.h)*k;cur.b+=(tgt.b-cur.b)*k;}
+  cur.r+=(tgt.r-cur.r)*(1-Math.exp(-dt*7));
+  if(seq){seqT+=dt;if(seqT>1.5){seqT=0;step();}}
+  render();requestAnimationFrame(frame);
+}
+render();requestAnimationFrame(frame);
+</script>
+</body>
+</html>

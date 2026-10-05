@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>調音方法の比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --panel:#FFFFFF; --ink:#1E2A33; --sub:#5A6873; --line:#C9D2D8; --shade:#E3EAEE;
+  --flesh:#E8959A; --flesh-stroke:#A8323E; --palate:#F3D2D3; --teeth:#FFFFFF; --outline:#6B7A85;
+  --air:#2F6FB0; --fric:#D9822B; --nasal:#2E8B62; --voice:#A8323E; --contact:#A8323E; --accent:#2F6FB0;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141A1F; --panel:#1C242B; --ink:#E6ECEF; --sub:#9AA8B2; --line:#34414B; --shade:#26313A;
+    --flesh:#C9676B; --flesh-stroke:#F0A0A6; --palate:#4A3336; --teeth:#DDE3E7; --outline:#8E9CA6;
+    --air:#6FA6DE; --fric:#E9A15A; --nasal:#5CC495; --voice:#F07C87; --contact:#F07C87; --accent:#6FA6DE; }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  line-height:1.8}
+main{max-width:1040px;margin:0 auto;padding:28px 20px 48px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 20px;font-size:15px;max-width:46em}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--ink);font-family:inherit}
+.cap{font-size:12px;fill:var(--sub)}
+.ttl{font-size:22px;font-weight:700}
+.sub{font-size:13px;fill:var(--sub)}
+.ipa{font-family:"Doulos SIL","Charis SIL","Gentium Plus","Times New Roman",serif}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:0 0 12px}
+button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--sub)}
+button[aria-pressed=true]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pick button small{display:block;font-size:12px;opacity:.75;line-height:1.3}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:10px;font-size:14px;color:var(--sub)}
+.seg{display:inline-flex;gap:0}
+.seg button{border-radius:0;min-width:64px}
+.seg button:first-child{border-radius:8px 0 0 8px}
+.seg button:last-child{border-radius:0 8px 8px 0;border-left:none}
+#pp{min-width:96px}
+input[type=range]{flex:1;min-width:120px;accent-color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--sub);margin:8px 0 0}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--sub);margin:6px 0 0}
+h2{font-size:22px;margin:36px 0 10px}
+h3{font-size:17px;margin:0 0 4px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{font-weight:700;background:var(--shade)}
+tbody th{font-weight:700;white-space:nowrap}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:8px}
+.points section{border-top:3px solid var(--line);padding-top:10px}
+.points p{margin:0;font-size:15px}
+.fine{margin-top:26px;font-size:13px;color:var(--sub)}
+kbd{font-family:inherit;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <h1>調音方法の比較</h1>
+  <p class="lead">調音点はすべて<b>歯茎</b>にそろえ、調音方法だけを切り替えます。前後を母音 [a] ではさみ、[aCa] と発音したときの舌、口蓋帆、気流、声帯の動きを見ます。</p>
+
+  <div class="stage">
+    <div class="pick" id="pick" role="group" aria-label="調音方法を選ぶ"></div>
+    <svg viewBox="0 0 680 540" role="img" aria-labelledby="st sd">
+      <title id="st">歯茎音の調音方法の比較アニメーション</title>
+      <desc id="sd">頭部の矢状断面図で、舌先と歯茎の狭め、口蓋帆の上げ下げ、口と鼻からの気流、声帯振動を示す。右には上から見た舌と口蓋の接触、下には狭めの時間変化を示す。</desc>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M1 1L8 5L1 9" fill="none" stroke="context-stroke" stroke-width="1.8"/>
+        </marker>
+        <clipPath id="tlclip"><rect x="90" y="420" width="560" height="120"/></clipPath>
+      </defs>
+      <g id="sag"></g>
+      <g id="side"></g>
+      <g id="tl"></g>
+    </svg>
+    <div class="controls">
+      <button id="pp" type="button">一時停止</button>
+      <span class="seg" role="group" aria-label="有声・無声">
+        <button type="button" id="vl">無声</button><button type="button" id="vd">有声</button>
+      </span>
+      <label for="slow">スロー倍率</label>
+      <input type="range" id="slow" min="1" max="5" step="1" value="3">
+      <span id="slowv" style="min-width:2em">3</span>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i style="background:var(--air)"></i>口からの気流</span>
+      <span><i style="background:var(--fric)"></i>摩擦（乱流の噪音）</span>
+      <span><i style="background:var(--ink)"></i>破裂（ためた息の開放）</span>
+      <span><i style="background:var(--nasal)"></i>鼻からの気流</span>
+      <span><i style="background:var(--voice)"></i>声帯振動</span>
+      <span><i style="background:var(--contact)"></i>舌と上あごの接触</span>
+    </div>
+    <p class="note">無声／有声を切り替えられるのは阻害音（破裂音・摩擦音・破擦音）だけです。鼻音から接近音までの共鳴音は有声で描いています。</p>
+  </div>
+
+  <h2>調音方法の対比</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>調音方法</th><th>狭めの度合い</th><th>気流</th><th>鼻腔</th><th>歯茎音の例</th></tr></thead>
+      <tbody>
+        <tr><th>破裂音</th><td>完全な閉鎖</td><td>せき止め、一気に開放</td><td>閉じる</td><td><span class="ipa">[t] [d]</span>　タ・ダ</td></tr>
+        <tr><th>摩擦音</th><td>ごく狭いすき間</td><td>すき間を通るときに乱流になり、噪音が出る</td><td>閉じる</td><td><span class="ipa">[s] [z]</span>　サ</td></tr>
+        <tr><th>破擦音</th><td>閉鎖のあと狭いすき間</td><td>ゆっくり開放し、そのまま摩擦</td><td>閉じる</td><td><span class="ipa">[t͡s] [d͡z]</span>　ツ</td></tr>
+        <tr><th>鼻音</th><td>口は完全な閉鎖</td><td>口からは出ず、鼻から出る</td><td><b>開く</b></td><td><span class="ipa">[n]</span>　ナ</td></tr>
+        <tr><th>弾き音</th><td>一瞬の接触（1回）</td><td>ほぼ止まらずに流れる</td><td>閉じる</td><td><span class="ipa">[ɾ]</span>　ラ</td></tr>
+        <tr><th>ふるえ音</th><td>接触と開放のくり返し</td><td>気流で舌先が振動する</td><td>閉じる</td><td><span class="ipa">[r]</span>　巻き舌</td></tr>
+        <tr><th>側面接近音</th><td>中央は閉鎖、両脇は開く</td><td>舌の両脇を通る</td><td>閉じる</td><td><span class="ipa">[l]</span>　英語 leaf</td></tr>
+        <tr><th>接近音</th><td>広いすき間</td><td>乱流にならず、噪音は出ない</td><td>閉じる</td><td><span class="ipa">[ɹ]</span>　英語 red</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>アニメーションの見どころ</h2>
+  <div class="points">
+    <section>
+      <h3>破裂音と鼻音：口の形は同じ</h3>
+      <p>[t] と [n] では、舌先が歯茎で完全に閉じるところまで同じです。違いは口蓋帆だけです。上がっていれば口の中に圧がたまって破裂し、下がっていれば息は鼻へ抜けます。</p>
+    </section>
+    <section>
+      <h3>破裂音・破擦音・摩擦音</h3>
+      <p>下のグラフで舌の動きを比べると、破裂音は一気に開き、破擦音は閉鎖のあといったん狭いすき間でとどまり、摩擦音ははじめから閉じきりません。</p>
+    </section>
+    <section>
+      <h3>弾き音とふるえ音</h3>
+      <p>接触が1回なら弾き音、何度もくり返せばふるえ音です。ふるえ音では舌先を筋肉で1回ずつ動かしているのではなく、声帯と同じように気流で振動させています。</p>
+    </section>
+    <section>
+      <h3>側面音は「上から見る」</h3>
+      <p>断面図だけでは [l] は閉鎖に見えます。右上の図のように、舌の中央は歯茎についたまま、両脇から息が流れています。</p>
+    </section>
+    <section>
+      <h3>無声音でも母音では声帯が振動する</h3>
+      <p>[ata] のような連続では、母音のあいだは声帯が振動し、[t] の区間だけ声門が開いて振動が止まります。一番下の帯で確かめられます。</p>
+    </section>
+    <section>
+      <h3>日本語の接近音</h3>
+      <p>日本語のヤ行 [j] とワ行 [ɰ]（[w] で表すことも多い）も接近音ですが、調音点は歯茎ではありません。ここでは比較のため歯茎の接近音 [ɹ] を描いています。</p>
+    </section>
+  </div>
+
+  <p class="fine">図は模式図です。狭めの幅、動く速さ、口蓋帆の動きは見やすいよう誇張しています。日本語のラ行の調音点は歯茎からやや後ろまで個人差があります。<kbd>Space</kbd> で再生・一時停止できます。</p>
+</main>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function txt(s,a,p){const e=mk('text',a,p);e.textContent=s;return e;}
+
+/* ---------- 調音方法の定義 ---------- */
+const M={
+ plosive:{jp:'破裂音',en:'plosive',obst:1,sym:['t','d'],nm:['無声歯茎破裂音','有声歯茎破裂音'],ex:['タ [ta]','ダ [da]'],
+  key:[[0,40],[.18,40],[.3,0],[.55,0],[.58,20],[.66,40],[1,40]],
+  ph:[[.18,'母音 [a]',''],[.3,'接近','舌先が歯茎へ向かう'],[.55,'閉鎖','息をせき止め、口の中の圧が高まる'],[.62,'開放（破裂）','ためた息が一気に出る'],[1,'母音 [a]','']]},
+ fricative:{jp:'摩擦音',en:'fricative',obst:1,fric:1,sym:['s','z'],nm:['無声歯茎摩擦音','有声歯茎摩擦音'],ex:['サ [sa]','語中のザ [z]'],
+  key:[[0,40],[.18,40],[.32,3],[.62,3],[.76,40],[1,40]],
+  ph:[[.18,'母音 [a]',''],[.3,'接近','舌先が歯茎へ向かう'],[.64,'狭め','すき間で乱流が起き、噪音が出る'],[.76,'開き','舌が離れる'],[1,'母音 [a]','']]},
+ affricate:{jp:'破擦音',en:'affricate',obst:1,fric:1,fricFrom:.45,sym:['t͡s','d͡z'],nm:['無声歯茎破擦音','有声歯茎破擦音'],ex:['ツ [tsɯ]','語頭のザ [dza]'],
+  key:[[0,40],[.15,40],[.27,0],[.45,0],[.5,3],[.66,3],[.78,40],[1,40]],
+  ph:[[.15,'母音 [a]',''],[.27,'接近','舌先が歯茎へ向かう'],[.45,'閉鎖','破裂音と同じようにせき止める'],[.68,'ゆっくり開放→摩擦','開ききらずに摩擦が続く'],[.78,'開き','舌が離れる'],[1,'母音 [a]','']]},
+ nasal:{jp:'鼻音',en:'nasal',son:1,sym:['n','n'],nm:['有声歯茎鼻音','有声歯茎鼻音'],ex:['ナ [na]','ナ [na]'],
+  key:[[0,40],[.18,40],[.3,0],[.6,0],[.72,40],[1,40]],
+  vel:[[0,0],[.14,0],[.26,1],[.62,1],[.74,0],[1,0]],
+  ph:[[.14,'母音 [a]',''],[.3,'口蓋帆が下がる','舌先は歯茎へ向かう'],[.6,'口は閉鎖・鼻は開放','息は鼻から抜け、圧はたまらない'],[.74,'口蓋帆が上がる','舌が離れる'],[1,'母音 [a]','']]},
+ tap:{jp:'弾き音',en:'tap / flap',son:1,sym:['ɾ','ɾ'],nm:['有声歯茎弾き音','有声歯茎弾き音'],ex:['ラ [ɾa]','ラ [ɾa]'],
+  key:[[0,40],[.25,40],[.4,10],[.46,0],[.5,0],[.56,10],[.72,40],[1,40]],
+  ph:[[.3,'母音 [a]',''],[.45,'接近','舌先を歯茎へ振り上げる'],[.51,'接触（1回だけ）','一瞬はじいてすぐ離れる'],[.72,'離れる',''],[1,'母音 [a]','']]},
+ trill:{jp:'ふるえ音',en:'trill',son:1,sym:['r','r'],nm:['有声歯茎ふるえ音','有声歯茎ふるえ音'],ex:['巻き舌の r','巻き舌の r'],
+  ph:[[.12,'母音 [a]',''],[.28,'接近','舌先を力を抜いて歯茎へ'],[.62,'振動（くり返し接触）','気流で舌先が震える'],[.8,'離れる',''],[1,'母音 [a]','']]},
+ lateral:{jp:'側面接近音',en:'lateral approximant',son:1,lat:1,sym:['l','l'],nm:['有声歯茎側面接近音','有声歯茎側面接近音'],ex:['英語 leaf の l','英語 leaf の l'],
+  key:[[0,40],[.18,40],[.3,0],[.6,0],[.72,40],[1,40]],
+  ph:[[.18,'母音 [a]',''],[.3,'接近','舌先が歯茎へ向かう'],[.6,'中央は閉鎖・両脇は開く','息は舌の両脇を流れる（右上図）'],[.72,'離れる',''],[1,'母音 [a]','']]},
+ approx:{jp:'接近音',en:'approximant',son:1,sym:['ɹ','ɹ'],nm:['有声歯茎接近音','有声歯茎接近音'],ex:['英語 red の r','英語 red の r'],
+  key:[[0,40],[.18,40],[.32,12],[.6,12],[.74,40],[1,40]],
+  ph:[[.18,'母音 [a]',''],[.32,'接近','舌先が歯茎へ近づく'],[.6,'広めの狭め','乱流が起きず、噪音は出ない'],[.74,'離れる',''],[1,'母音 [a]','']]}
+};
+const ORDER=['plosive','fricative','affricate','nasal','tap','trill','lateral','approx'];
+function ss(u){return u*u*(3-2*u);}
+function kf(a,t){for(let i=0;i<a.length-1;i++){if(t<=a[i+1][0]){const u=(t-a[i][0])/(a[i+1][0]-a[i][0]||1);return a[i][1]+(a[i+1][1]-a[i][1])*ss(Math.max(0,Math.min(1,u)));}}return a[a.length-1][1];}
+function gapAt(m,t){
+  if(m===M.trill){
+    if(t<.12||t>=.8)return 40;
+    if(t<.28)return 40+(5-40)*ss((t-.12)/.16);
+    if(t<.62){const u=(t-.28)/.34;return 2.5+2.5*Math.cos(2*Math.PI*3*u);}
+    return 5+(40-5)*ss((t-.62)/.18);
+  }
+  return kf(m.key,t);
+}
+function velAt(m,t){return m.vel?kf(m.vel,t):0;}
+/* 各時点の状態を前計算 */
+const NS_=400;
+function build(m,voiced){
+  const out=[];let blocked=false,burst=0;
+  for(let i=0;i<NS_;i++){
+    const t=i/NS_,g=gapAt(m,t),v=velAt(m,t);let st;
+    if(m.lat&&g<=0.3)st='flow';
+    else if(g<=0.3)st='block';
+    else if(m.fric&&g<6&&t>=(m.fricFrom||0))st='fric';
+    else st='flow';
+    if(st!=='block'&&blocked&&m.obst&&!m.fric&&v<.5)burst=0.05;
+    if(burst>0&&st==='flow'){st='burst';burst-=1/NS_;}
+    blocked=(st==='block');
+    const voi=(voiced||m.son)?1:(g<18?0:1);
+    out.push({g,v,st,voi});
+  }
+  return out;
+}
+
+/* ---------- 矢状断面図 ---------- */
+const sag=document.getElementById('sag');
+const OUT='var(--outline)';
+// 鼻腔の天井・咽頭後壁
+mk('path',{d:'M62,100 Q92,80 150,84 L282,86 Q314,88 318,112',fill:'none',stroke:OUT,'stroke-width':'1.3'},sag);
+mk('path',{d:'M318,112 Q324,200 320,300 L318,405',fill:'none',stroke:OUT,'stroke-width':'1.3'},sag);
+// 硬口蓋（組織）
+mk('path',{d:'M97,192 Q103,182 112,179 Q120,176 128,177 Q185,150 240,158 L240,146 Q180,138 120,156 Q92,164 66,168 L84,188 Z',fill:'var(--palate)',stroke:OUT,'stroke-width':'1.2'},sag);
+// 顔の輪郭
+mk('path',{d:'M76,40 Q66,80 62,100 L38,150 Q34,160 44,164 L66,168 Q60,184 58,196 Q57,206 70,208 L86,210',fill:'none',stroke:OUT,'stroke-width':'1.5','stroke-linejoin':'round'},sag);
+mk('path',{d:'M86,219 L70,219 Q57,221 60,234 Q63,246 74,250 Q66,262 70,284 Q78,302 104,302 L170,302 Q205,305 232,340 L250,405',fill:'none',stroke:OUT,'stroke-width':'1.5','stroke-linejoin':'round'},sag);
+// 歯
+mk('path',{d:'M85,188 L97,190 L97,213 L89,215 Z',fill:'var(--teeth)',stroke:OUT,'stroke-width':'1.1'},sag);
+mk('path',{d:'M85,217 L93,217 L99,241 L88,243 Z',fill:'var(--teeth)',stroke:OUT,'stroke-width':'1.1'},sag);
+// 喉頭・気管
+mk('path',{d:'M290,380 L290,405 M318,380 L318,405',stroke:OUT,'stroke-width':'1.3',fill:'none'},sag);
+mk('path',{d:'M284,322 Q290,300 300,290',stroke:OUT,'stroke-width':'2.2',fill:'none','stroke-linecap':'round'},sag);
+// 圧のたまり
+const press=mk('ellipse',{cx:190,cy:186,rx:78,ry:14,fill:'var(--air)',opacity:0},sag);
+// 口蓋帆
+const velum=mk('path',{fill:'none',stroke:'var(--flesh)','stroke-width':'13','stroke-linecap':'round'},sag);
+const velumO=mk('path',{fill:'none',stroke:'var(--flesh-stroke)','stroke-width':'1','stroke-dasharray':'2 3',opacity:.0},sag);
+// 舌
+const tongue=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1.2','stroke-linejoin':'round'},sag);
+// 声帯
+const vfL=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},sag);
+const vfR=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},sag);
+// 摩擦のしるし
+const fricG=mk('g',{stroke:'var(--fric)','stroke-width':'1.6',fill:'none','stroke-linecap':'round',opacity:0},sag);
+['M92,203 q-4,3 -8,0 q-4,-3 -8,0','M80,212 q-4,3 -8,0 q-4,-3 -8,0','M64,209 q-4,3 -8,0 q-4,-3 -8,0','M58,219 q-4,3 -8,0 q-4,-3 -8,0'].forEach(d=>mk('path',{d},fricG));
+// 破裂のしるし
+const burstG=mk('g',{stroke:'var(--air)','stroke-width':'2',fill:'none','stroke-linecap':'round',opacity:0},sag);
+[[-1,-.4],[-1,0],[-1,.4],[-.7,-.8],[-.7,.8]].forEach(([dx,dy])=>mk('line',{x1:80+dx*6,y1:214+dy*6,x2:80+dx*22,y2:214+dy*22},burstG));
+// 調音点
+mk('circle',{cx:106,cy:183,r:3,fill:'none',stroke:'var(--contact)','stroke-width':'1.5'},sag);
+// ラベル
+const lab=(s,x,y,a)=>txt(s,Object.assign({class:'cap',x,y},a||{}),sag);
+lab('鼻腔',180,118,{'text-anchor':'middle'});
+lab('口腔',218,180,{'text-anchor':'middle'});
+lab('歯茎',108,172,{'text-anchor':'middle',style:'font-size:11px'});
+mk('line',{x1:300,y1:152,x2:336,y2:152,stroke:'var(--line)'},sag);lab('口蓋帆',340,156);
+lab('咽頭',326,290);
+mk('line',{x1:318,y1:374,x2:336,y2:374,stroke:'var(--line)'},sag);lab('声帯',340,378);
+const latNote=txt('息は舌の両脇へ',{class:'cap',x:128,y:238,opacity:0,style:'fill:var(--air);font-size:12px'},sag);
+
+// 気流の経路
+const oralPts=[[304,400],[303,350],[301,300],[298,248],[284,212],[250,194],[200,182],[150,183],[112,189],[100,204],[90,214],[70,214],[26,214]];
+const nasPts=[[304,400],[303,350],[301,300],[302,240],[307,190],[306,140],[288,112],[240,104],[160,104],[100,112],[68,134],[54,156],[48,170],[36,192]];
+function mkPath(pts){const L=[0];for(let i=1;i<pts.length;i++){L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));}
+  const T=L[L.length-1];return {pts,L,T,at(s){const d=s*T;let i=1;while(i<L.length-1&&L[i]<d)i++;const u=(d-L[i-1])/(L[i]-L[i-1]);
+  const a=pts[i-1],b=pts[i];return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,b[0]-a[0],b[1]-a[1]];}};}
+const oralP=mkPath(oralPts),nasP=mkPath(nasPts);
+const sC=oralP.L[8]/oralP.T;
+const partG=mk('g',{},sag);
+const oralDots=Array.from({length:30},(_,i)=>({s:i/30,e:mk('circle',{r:2.6,fill:'var(--air)'},partG)}));
+const nasDots=Array.from({length:22},(_,i)=>({s:i/22,e:mk('circle',{r:2.6,fill:'var(--nasal)'},partG)}));
+
+function cr(p){let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
+  d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`;}return d;}
+function tonguePath(g){
+  const T=[107+0.3*g,186+g],B=[138+0.1*g,196+0.8*g],D=[195,196+0.75*g],K=[255,214+0.3*g],R=[284,272];
+  return cr([[100,258],T,B,D,K,R,[276,318]])+' Q220,300 160,285 L100,262 Z';
+}
+function velumPath(v){
+  const ex=312+(284-312)*v,ey=140+(200-140)*v,cx=282+(270-282)*v,cy=132+(165-132)*v;
+  return `M240,152 Q${cx},${cy} ${ex},${ey}`;
+}
+
+/* ---------- 右側パネル ---------- */
+const side=document.getElementById('side');
+mk('line',{x1:405,y1:20,x2:405,y2:400,stroke:'var(--line)'},side);
+const tJP=txt('',{class:'ttl',x:425,y:40},side);
+const tEN=txt('',{class:'sub',x:425,y:60},side);
+const tSym=txt('',{class:'ipa',x:470,y:128,'text-anchor':'middle',style:'font-size:58px'},side);
+const tNm=txt('',{x:522,y:104,style:'font-size:15px;font-weight:700'},side);
+const tEx=txt('',{class:'sub',x:522,y:126},side);
+mk('rect',{x:420,y:146,width:250,height:52,rx:8,fill:'var(--shade)'},side);
+const tPh=txt('',{x:432,y:168,style:'font-size:15px;font-weight:700'},side);
+const tPh2=txt('',{class:'sub',x:432,y:188,style:'font-size:12px'},side);
+txt('上から見た舌と上あごの接触',{class:'cap',x:545,y:220,'text-anchor':'middle'},side);
+txt('前（歯）',{class:'cap',x:596,y:272,style:'font-size:11px'},side);
+const tvG=mk('g',{transform:'translate(545,318) scale(.82) translate(-545,-318)'},side);
+mk('path',{d:'M492,382 C486,300 500,252 545,250 C590,252 604,300 598,382',fill:'none',stroke:OUT,'stroke-width':'7','stroke-linecap':'round',opacity:.35},tvG);
+mk('path',{d:'M505,386 C502,305 516,268 545,266 C574,268 588,305 585,386 Z',fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},tvG);
+const band=mk('path',{d:'M502,330 C499,290 512,261 545,259 C578,261 591,290 588,330',fill:'none',stroke:'var(--contact)','stroke-width':'9','stroke-linecap':'butt'},tvG);
+const arC=mk('path',{d:'M545,380 L545,246',fill:'none',stroke:'var(--air)','stroke-width':'2.5','stroke-dasharray':'6 6','marker-end':'url(#ah)'},tvG);
+const arS=mk('g',{fill:'none',stroke:'var(--air)','stroke-width':'2.5','stroke-dasharray':'6 6'},tvG);
+const arL=mk('path',{d:'M505,380 C497,330 496,290 504,258','marker-end':'url(#ah)'},arS);
+const arR=mk('path',{d:'M585,380 C593,330 594,290 586,258','marker-end':'url(#ah)'},arS);
+const tVoi=txt('',{class:'cap',x:425,y:388},side);
+const tVel=txt('',{class:'cap',x:425,y:405},side);
+let bandL=0;
+
+/* ---------- 時間軸 ---------- */
+const tl=document.getElementById('tl');
+
+const X0=90,X1=650,GY0=424,GY1=474;
+const gx=t=>X0+(X1-X0)*t, gy=g=>GY1-(GY1-GY0)*Math.min(g,20)/20;
+mk('line',{x1:20,y1:412,x2:660,y2:412,stroke:'var(--line)'},tl);
+txt('すき間',{class:'cap',x:84,y:452,'text-anchor':'end'},tl);
+txt('開き',{class:'cap',x:84,y:430,'text-anchor':'end',style:'font-size:11px'},tl);
+txt('これより狭いと摩擦が起こる',{class:'cap',x:650,y:gy(3)-3,'text-anchor':'end',style:'font-size:10px;fill:var(--fric)'},tl);
+txt('閉鎖',{class:'cap',x:84,y:478,'text-anchor':'end',style:'font-size:11px'},tl);
+mk('line',{x1:X0,y1:GY1,x2:X1,y2:GY1,stroke:'var(--line)'},tl);
+mk('line',{x1:X0,y1:gy(3),x2:X1,y2:gy(3),stroke:'var(--fric)','stroke-dasharray':'3 4','stroke-width':'1',opacity:.7},tl);
+mk('line',{x1:X0,y1:gy(12),x2:X1,y2:gy(12),stroke:'var(--line)','stroke-dasharray':'3 4','stroke-width':'1'},tl);
+const curve=mk('polyline',{fill:'none',stroke:'var(--ink)','stroke-width':'2','stroke-linejoin':'round'},tl);
+const ROWS=[['声帯振動',490],['口の気流',506],['鼻の気流',522]];
+ROWS.forEach(([s,y])=>{txt(s,{class:'cap',x:84,y:y+8,'text-anchor':'end'},tl);mk('rect',{x:X0,y,width:X1-X0,height:9,fill:'var(--shade)',rx:2},tl);});
+const barsG=mk('g',{},tl);
+const head=mk('line',{y1:420,y2:534,stroke:'var(--accent)','stroke-width':'1.5'},tl);
+
+function drawTimeline(data){
+  let pts='';for(let i=0;i<=NS_;i+=2){const d=data[Math.min(i,NS_-1)];pts+=`${gx(i/NS_).toFixed(1)},${gy(d.g).toFixed(1)} `;}
+  curve.setAttribute('points',pts);
+  barsG.replaceChildren();
+  const seg=(row,fn)=>{let s=0,c=fn(data[0]);for(let i=1;i<=NS_;i++){const k=i<NS_?fn(data[i]):null;if(k!==c){if(c)mk('rect',{x:gx(s/NS_),y:ROWS[row][1],width:gx(i/NS_)-gx(s/NS_),height:9,fill:c},barsG);s=i;c=k;}}};
+  seg(0,d=>d.voi?'var(--voice)':null);
+  seg(1,d=>d.st==='block'?null:d.st==='fric'?'var(--fric)':d.st==='burst'?'var(--ink)':'var(--air)');
+  seg(2,d=>d.v>.5?'var(--nasal)':null);
+}
+
+/* ---------- UI ---------- */
+let cur='plosive',voicedPref=false,data;
+const pick=document.getElementById('pick');
+const btns={};
+ORDER.forEach(k=>{const b=document.createElement('button');b.type='button';b.innerHTML=`${M[k].jp}<small class="ipa">[${M[k].sym[0]}${M[k].son?'':' / '+M[k].sym[1]}]</small>`;
+  b.addEventListener('click',()=>select(k));pick.appendChild(b);btns[k]=b;});
+const vl=document.getElementById('vl'),vd=document.getElementById('vd');
+vl.addEventListener('click',()=>{voicedPref=false;select(cur);});
+vd.addEventListener('click',()=>{voicedPref=true;select(cur);});
+function voiced(){return M[cur].son?true:voicedPref;}
+function select(k){
+  cur=k;const m=M[k],vi=voiced()?1:0;
+  ORDER.forEach(o=>btns[o].setAttribute('aria-pressed',o===k));
+  vl.disabled=!!m.son;vl.setAttribute('aria-pressed',!vi);vd.setAttribute('aria-pressed',!!vi);
+  tJP.textContent=m.jp;tEN.textContent=m.en;tSym.textContent=m.sym[vi];tNm.textContent=m.nm[vi];tEx.textContent='例：'+m.ex[vi];
+  data=build(m,vi);drawTimeline(data);pressure=0;
+}
+const pp=document.getElementById('pp'),slow=document.getElementById('slow');
+let playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,last=performance.now(),T=0,pressure=0,wall=0;
+function setBtn(){pp.textContent=playing?'一時停止':'再生';}
+function toggle(){playing=!playing;last=performance.now();setBtn();}
+pp.addEventListener('click',toggle);
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();toggle();}});
+slow.addEventListener('input',()=>{document.getElementById('slowv').textContent=slow.value;});
+select('plosive');setBtn();
+
+function frame(now){
+  const dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
+  const dur=1.6*(+slow.value);
+  const dtc=playing?dt/dur:0;T+=dtc;if(playing)wall+=dt;
+  const m=M[cur],t=((T%1)+1)%1,d=data[Math.floor(t*NS_)%NS_];
+  const g=gapAt(m,t),v=velAt(m,t);
+  tongue.setAttribute('d',tonguePath(g));
+  velum.setAttribute('d',velumPath(v));
+  // 圧
+  if(d.st==='block'&&v<.5&&m.obst)pressure=Math.min(1,pressure+dtc*5);else pressure=Math.max(0,pressure-dtc*14);
+  press.setAttribute('opacity',(pressure*0.3).toFixed(2));
+  fricG.setAttribute('opacity',d.st==='fric'?(0.5+0.5*Math.random()).toFixed(2):0);
+  burstG.setAttribute('opacity',d.st==='burst'?1:0);
+  latNote.setAttribute('opacity',m.lat&&g<=0.3?1:0);
+  // 声帯
+  const vib=d.voi?(1+Math.sin(wall*2*Math.PI*9)):0,open=d.voi?vib*1.4:6;
+  vfL.setAttribute('d',`M290,368 L290,380 L${303-open/2},374 Z`);
+  vfR.setAttribute('d',`M318,368 L318,380 L${305+open/2},374 Z`);
+  // 粒子（口）
+  const mult=d.st==='burst'?5:d.st==='fric'?1.7:1,K=1.4;
+  oralDots.forEach((p,i)=>{
+    const frozen=d.st==='block'&&p.s<sC;
+    if(!frozen){p.s+=dtc*K*mult;if(p.s>=1)p.s-=1;}
+    const [x,y]=oralP.at(p.s);let jx=0,jy=0;
+    if(d.st==='fric'&&p.s>sC&&p.s<sC+0.22){jx=(Math.random()-.5)*6;jy=(Math.random()-.5)*6;}
+    p.e.setAttribute('cx',(x+jx).toFixed(1));p.e.setAttribute('cy',(y+jy).toFixed(1));
+    let op=1;if(m.lat&&g<=0.3&&Math.abs(p.s-sC)<0.08)op=0.25;
+    p.e.setAttribute('fill',d.st==='fric'&&p.s>sC?'var(--fric)':'var(--air)');
+    p.e.setAttribute('opacity',op);
+  });
+  nasDots.forEach(p=>{if(v>.5){p.s+=dtc*K;if(p.s>=1)p.s-=1;}
+    const [x,y]=nasP.at(p.s);p.e.setAttribute('cx',x.toFixed(1));p.e.setAttribute('cy',y.toFixed(1));
+    p.e.setAttribute('opacity',p.s<0.28?0:Math.max(0,(v-.3)/.7).toFixed(2));});
+  // 口の下流（奥の区間）は鼻音の閉鎖中も咽頭まではつながる：上流の粒子は咽頭で止まる表示のまま
+  // 右パネル
+  const ph=m.ph.find(p=>t<p[0])||m.ph[m.ph.length-1];
+  tPh.textContent=ph[1];tPh2.textContent=ph[2];
+  tVoi.textContent='声帯：'+(d.voi?'振動している':'開いていて振動しない（無声）');
+  tVel.textContent='口蓋帆：'+(v>.5?'下がっている（鼻へ息が抜ける）':'上がっている（鼻への道は閉じる）');
+  // 上から見た図
+  if(!bandL)bandL=band.getTotalLength();
+  let bo=1,da='none',c=0,s=0;
+  if(m.lat&&g<=0.3){da=`0 ${(bandL/2-22).toFixed(1)} 44 ${bandL}`;s=1;}
+  else if(g<=0.3){da='none';}
+  else if(g<6){const w=g*5;da=`${(bandL/2-w/2).toFixed(1)} ${w.toFixed(1)} ${bandL}`;c=1;}
+  else if(g<16){da=`34 ${(bandL-68).toFixed(1)} 34`;c=1;}
+  else{bo=0;c=1;}
+  band.setAttribute('stroke-dasharray',da);band.setAttribute('opacity',bo);
+  const flowing=d.st!=='block';
+  arC.setAttribute('opacity',c&&flowing?1:0);arS.setAttribute('opacity',s?1:0);
+  arC.setAttribute('stroke',d.st==='fric'?'var(--fric)':'var(--air)');
+  const off=(-T*120).toFixed(1);arC.setAttribute('stroke-dashoffset',off);arL.setAttribute('stroke-dashoffset',off);arR.setAttribute('stroke-dashoffset',off);
+  head.setAttribute('x1',gx(t));head.setAttribute('x2',gx(t));
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

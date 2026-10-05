@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>地声と裏声の声帯振動</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --panel:#FFFFFF; --ink:#1E2A33; --sub:#5A6873; --line:#C9D2D8;
+  --flesh:#E8959A; --flesh-stroke:#A8323E; --air:#2C2C2A; --wall:#9AA6B0;
+  --wave:#2F6FB0; --modal:#A8323E; --fals:#2F6FB0; --accent:#2F6FB0; --shade:#E3EAEE;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141A1F; --panel:#1C242B; --ink:#E6ECEF; --sub:#9AA8B2; --line:#34414B;
+    --flesh:#C9676B; --flesh-stroke:#F0A0A6; --air:#05080A; --wall:#6B7883;
+    --wave:#6FA6DE; --modal:#F07C87; --fals:#6FA6DE; --accent:#6FA6DE; --shade:#26313A; }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  line-height:1.8}
+main{max-width:1040px;margin:0 auto;padding:28px 20px 48px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 20px;font-size:15px;max-width:44em}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--ink);font-family:inherit}
+.cap{font-size:13px;fill:var(--sub)}
+.ttl{font-size:20px;font-weight:700}
+.sub{font-size:13px;fill:var(--sub)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:10px;font-size:14px;color:var(--sub)}
+button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);
+  border-radius:8px;padding:6px 14px;cursor:pointer;min-width:96px}
+button:hover{border-color:var(--sub)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range]{flex:1;min-width:140px;accent-color:var(--accent)}
+.note{font-size:13px;color:var(--sub);margin:6px 0 0}
+h2{font-size:22px;margin:36px 0 10px}
+h3{font-size:17px;margin:0 0 4px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{font-weight:700;background:var(--shade)}
+thead th.m{color:var(--modal)} thead th.f{color:var(--fals)}
+tbody th{font-weight:700;white-space:nowrap;color:var(--sub)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:8px}
+.points section{border-top:3px solid var(--line);padding-top:10px}
+.points p{margin:0;font-size:15px}
+.fine{margin-top:26px;font-size:13px;color:var(--sub)}
+kbd{font-family:inherit;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <h1>地声と裏声の声帯振動</h1>
+  <p class="lead">裏声は舌や唇の動きではなく、喉頭で音源をつくる「発声（phonation）」の違いです。声帯の断面、上から見た声門、声門の開きの時間変化を並べて比べます。</p>
+
+  <div class="stage">
+    <svg viewBox="0 0 680 425" role="img" aria-labelledby="st sd">
+      <title id="st">地声と裏声の声帯振動の比較アニメーション</title>
+      <desc id="sd">地声では厚い声帯が上下にずれて振動し毎周期しっかり閉じる。裏声では薄く伸びた声帯の縁だけが速く小さく振動し、完全には閉じない。</desc>
+      <text class="ttl" x="170" y="22" text-anchor="middle">地声（modal voice）</text>
+      <text class="sub" x="170" y="42" text-anchor="middle">TA筋優位・厚い声帯</text>
+      <text class="ttl" x="510" y="22" text-anchor="middle">裏声（falsetto）</text>
+      <text class="sub" x="510" y="42" text-anchor="middle">CT筋優位・薄く伸びた声帯</text>
+      <text class="cap" x="340" y="135" text-anchor="middle">断面</text>
+      <text class="cap" x="340" y="151" text-anchor="middle">（前から見る）</text>
+      <text class="cap" x="340" y="272" text-anchor="middle">上から見た声門</text>
+      <text class="cap" x="340" y="352" text-anchor="middle">声門の開き</text>
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/>
+        </marker>
+      </defs>
+      <g id="col0"></g>
+      <g id="col1"></g>
+      <text class="cap" x="170" y="414" text-anchor="middle">毎周期しっかり閉じる時間がある</text>
+      <text class="cap" x="510" y="414" text-anchor="middle">速く小さく揺れ、閉じきらない</text>
+    </svg>
+    <div class="controls">
+      <button id="pp" type="button">一時停止</button>
+      <label for="slow">スロー倍率</label>
+      <input type="range" id="slow" min="1" max="5" step="1" value="3">
+      <span id="slowv" style="min-width:2em">3</span>
+    </div>
+    <p class="note">実際の振動は毎秒100〜数百回です。見やすいよう大幅に遅くし、裏声は地声の約2倍の速さで描いています。断面図の下の矢印は肺からの気流です。</p>
+  </div>
+
+  <h2>地声と裏声の対比</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th class="m">地声（modal voice）</th><th class="f">裏声（falsetto）</th></tr></thead>
+      <tbody>
+        <tr><th>主に働く筋</th><td>甲状披裂筋（TA筋、声帯筋）</td><td>輪状甲状筋（CT筋）。TA筋はゆるむ</td></tr>
+        <tr><th>声帯の形</th><td>厚く、比較的短い</td><td>前後に引き伸ばされ、薄く張りつめる</td></tr>
+        <tr><th>振動する部分</th><td>声帯全体。上下に厚みをもって振動</td><td>主に縁の薄い部分だけ</td></tr>
+        <tr><th>粘膜波動</th><td>大きい。下縁が先に開き上縁があとから開く</td><td>小さい。上下のずれがほとんどない</td></tr>
+        <tr><th>声門閉鎖</th><td>毎周期しっかり閉じる（閉鎖期がある）</td><td>不完全になりやすく、すき間が残る</td></tr>
+        <tr><th>基本周波数</th><td>話し声〜中音域</td><td>高い</td></tr>
+        <tr><th>倍音・音色</th><td>高い倍音まで豊か。張りのある音色</td><td>倍音が少なくスペクトル傾斜が急。柔らかく細い音色</td></tr>
+        <tr><th>息もれ</th><td>少ない</td><td>混じりやすい</td></tr>
+        <tr><th>振動機構</th><td>M1</td><td>M2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>アニメーションの見どころ</h2>
+  <div class="points">
+    <section>
+      <h3>断面：厚みと位相差</h3>
+      <p>地声では声帯の下の縁が先に開き、上の縁があとから開きます。この上下のずれが粘膜波動で、下から上へ波が伝わるように見えます。裏声では薄い縁がほぼ一体となって揺れます。</p>
+    </section>
+    <section>
+      <h3>上から：閉じるか、閉じないか</h3>
+      <p>地声では声門が周期ごとに一本の線になって完全に閉じます。裏声では細いすき間が残り、そこから空気がもれることが息っぽい音色につながります。</p>
+    </section>
+    <section>
+      <h3>波形：閉鎖期と倍音</h3>
+      <p>地声の波形には山と山のあいだに平らな閉鎖期があります。声門が急に閉じる瞬間が高い倍音を生むため、閉鎖期のない裏声は倍音が少なく柔らかく聞こえます。</p>
+    </section>
+  </div>
+
+  <h2>言語の中での裏声</h2>
+  <div class="points">
+    <section>
+      <h3>地声から裏声への切り替え</h3>
+      <p>高い声を出していくと声がひっくり返る瞬間があります。これはM1からM2への切り替えで、TA筋とCT筋のバランスが急に変わるためと説明されます。</p>
+    </section>
+    <section>
+      <h3>意味を区別するか</h3>
+      <p>裏声が語の意味を区別する音素的な対立に使われる言語はほとんど報告されていません。驚き、丁寧さ、皮肉、子どもへの語りかけなど、パラ言語的・社会言語的な意味を担うことが多い点で、息もれ声やきしみ声と対照的です。</p>
+    </section>
+    <section>
+      <h3>用語の注意</h3>
+      <p>声楽でいう「頭声（head voice）」と falsetto が同じものかどうかは、研究者や流派によって見解が分かれます。発声タイプの分類としては Laver などの枠組みが参考になります。</p>
+    </section>
+  </div>
+
+  <p class="fine">図は模式図で、振幅や形は誇張しています。振動機構は M0（きしみ声）、M1（地声）、M2（裏声）、M3（ホイッスルボイス）と整理されます。<kbd>Space</kbd> で再生・一時停止できます。</p>
+</main>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+const cols=[0,1].map(i=>{
+  const g=document.getElementById('col'+i), cx=i?510:170;
+  mk('line',{x1:cx-100,y1:62,x2:cx-100,y2:212,stroke:'var(--wall)','stroke-width':'1.2'},g);
+  mk('line',{x1:cx+100,y1:62,x2:cx+100,y2:212,stroke:'var(--wall)','stroke-width':'1.2'},g);
+  const L=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},g);
+  const R=mk('path',{fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'1'},g);
+  mk('line',{x1:cx,y1:210,x2:cx,y2:192,stroke:'var(--sub)','stroke-width':'1.5','marker-end':'url(#ar)'},g);
+  mk('rect',{x:cx-60,y:228,width:120,height:92,rx:10,fill:'var(--flesh)',stroke:'var(--flesh-stroke)','stroke-width':'0.8'},g);
+  const lens=mk('path',{fill:'var(--air)',stroke:'var(--air)','stroke-width':'1.5'},g);
+  mk('line',{x1:cx-100,y1:395,x2:cx+100,y2:395,stroke:'var(--line)','stroke-width':'1'},g);
+  const wave=mk('polyline',{fill:'none',stroke:'var(--wave)','stroke-width':'2','stroke-linejoin':'round'},g);
+  return {cx,L,R,lens,wave,f:i};
+});
+function state(f,t){
+  if(f===0){const th=2*Math.PI*t;const gL=Math.max(0,14*Math.sin(th)),gU=Math.max(0,14*Math.sin(th-1.1));return {gL,gU,a:Math.min(gL,gU)};}
+  const g=2+6*(0.5+0.5*Math.sin(2*Math.PI*t*2));return {gL:g,gU:g,a:g};
+}
+function fold(cx,s,k,f){
+  const X=x=>cx+k*x;
+  if(f===0) return `M${X(-100)},205 L${X(-30-s.gL*0.5)},180 Q${X(-2-s.gL)},172 ${X(-2-s.gL)},160 L${X(-2-s.gU)},124 Q${X(-2-s.gU)},114 ${X(-40-s.gU*0.5)},108 L${X(-100)},98 Z`;
+  return `M${X(-100)},205 L${X(-12-s.gL*0.6)},148 Q${X(-2-s.gL)},142 ${X(-2-s.gL)},138 L${X(-2-s.gU)},131 Q${X(-2-s.gU)},127 ${X(-14-s.gU*0.6)},122 L${X(-100)},98 Z`;
+}
+const pp=document.getElementById('pp'), slow=document.getElementById('slow');
+let playing=!matchMedia('(prefers-reduced-motion: reduce)').matches, last=performance.now(), T=0;
+function setBtn(){pp.textContent=playing?'一時停止':'再生';}
+function toggle(){playing=!playing;last=performance.now();setBtn();}
+pp.addEventListener('click',toggle);
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();toggle();}});
+slow.addEventListener('input',()=>{document.getElementById('slowv').textContent=slow.value;});
+setBtn();
+function frame(now){
+  if(playing) T+=(now-last)/1000/(0.4*(+slow.value)); last=now;
+  cols.forEach(c=>{
+    const s=state(c.f,T);
+    c.L.setAttribute('d',fold(c.cx,s,1,c.f)); c.R.setAttribute('d',fold(c.cx,s,-1,c.f));
+    const top=c.f?232:240, bot=c.f?316:308, w=s.a*1.8, mid=(top+bot)/2;
+    c.lens.setAttribute('d',w<0.3?`M${c.cx},${top} L${c.cx},${bot}`:`M${c.cx},${top} Q${c.cx+w},${mid} ${c.cx},${bot} Q${c.cx-w},${mid} ${c.cx},${top} Z`);
+    let pts='';for(let x=0;x<=200;x+=2){const a=state(c.f,T-(200-x)/200*3).a;pts+=`${c.cx-100+x},${(395-a*4.3).toFixed(1)} `;}
+    c.wave.setAttribute('points',pts);
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
