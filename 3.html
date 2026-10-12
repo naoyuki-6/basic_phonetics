@@ -1,0 +1,230 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>矢状断面図の描き順</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=Zen+Old+Mincho:wght@700&display=swap">
+<style>
+/* Layout: 方眼紙の上の図（左）と、手順パネル（右）。狭い画面では縦に積む */
+:root{
+  --paper:#eef2f3; --grid:#d6dfe2; --ink:#22303a; --muted:#5d6e78;
+  --accent:#d4500f; --panel:#f8fafa; --line:#c9d4d8; --fixed:#2f6f8f;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141b20; --grid:#222d34; --ink:#dbe4e9; --muted:#8fa1ab;
+  --accent:#ff8a4c; --panel:#1a2329; --line:#2e3b43; --fixed:#7cbcd9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#141b20; --grid:#222d34; --ink:#dbe4e9; --muted:#8fa1ab;
+  --accent:#ff8a4c; --panel:#1a2329; --line:#2e3b43; --fixed:#7cbcd9; color-scheme:dark}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:24px}
+header h1{font-family:var(--display);font-size:clamp(24px,4vw,34px);line-height:1.3;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:1fr}}
+
+.figure{border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:20px 20px}
+.figure svg{display:block;width:100%;height:auto}
+.stroke{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.6;stroke-dasharray:1;stroke-dashoffset:1;stroke:var(--ink)}
+.stroke.current{stroke:var(--accent);stroke-width:3.2}
+.guide path{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:3 4;opacity:.45}
+.guide[hidden]{display:none}
+.lbl{font-family:var(--body);font-size:11px;fill:var(--muted);opacity:0;transition:opacity .4s}
+.lbl.on{opacity:1}
+.lead{stroke:var(--muted);stroke-width:.8;opacity:0;transition:opacity .4s}
+.lead.on{opacity:.7}
+.lbl.cur{fill:var(--accent);font-weight:700}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:16px;min-width:0}
+.now{display:grid;gap:6px}
+.meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip{font-size:12px;letter-spacing:.06em;padding:1px 9px;border-radius:99px;border:1px solid currentColor}
+.chip.fixed{color:var(--fixed)} .chip.move{color:var(--accent)}
+.now h2{font-family:var(--display);font-size:22px;margin:0;line-height:1.4}
+.now ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink);min-width:6.5em}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opts{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);align-items:center}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-top:1px solid var(--line);padding-top:12px}
+ol.steps button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:2em 1fr auto;gap:8px;align-items:center;padding:5px 8px;border-radius:4px;cursor:pointer;font-size:14px}
+ol.steps button:hover{background:var(--paper)}
+ol.steps button:focus-visible{outline:2px solid var(--accent)}
+ol.steps .n{font-variant-numeric:tabular-nums;color:var(--muted)}
+ol.steps .k{font-size:11px;color:var(--muted)}
+ol.steps li.done .t{color:var(--muted)}
+ol.steps li.cur button{background:var(--paper)}
+ol.steps li.cur .t{color:var(--accent);font-weight:700}
+.note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>矢状断面図の描き順</h1>
+    <p>調音器官の正中矢状断面図を、手で描くときの順番どおりに描いていきます。形の変わらない部分を先に、音によって動く部分を後に描くのがコツです。</p>
+  </header>
+
+  <div class="main">
+    <div class="figure">
+      <svg id="fig" viewBox="30 10 350 420" role="img" aria-label="調音器官の正中矢状断面図">
+        <g class="guide" id="guide"></g>
+        <g id="drawing">
+          <!-- 1 鼻と鼻腔 -->
+          <path data-step="0" d="M165,18 C158,40 150,58 140,74 C122,96 92,112 76,126 C72,132 76,140 86,142 C94,144 102,146 108,150"/>
+          <path data-step="0" d="M150,78 C190,82 240,92 270,104 C290,112 302,124 306,140"/>
+          <path data-step="0" d="M120,146 C160,143 205,139 242,142"/>
+          <!-- 2 上唇と上の歯 -->
+          <path data-step="1" d="M108,150 C104,158 100,166 96,174 C95,180 100,184 112,186 C118,186 122,182 124,176"/>
+          <path data-step="1" d="M128,170 C126,180 123,190 121,200 C126,203 132,202 136,198 C138,190 140,180 142,172"/>
+          <!-- 3 歯茎と硬口蓋 -->
+          <path data-step="2" d="M142,172 C146,164 150,160 156,161 C162,162 166,158 172,154 C195,144 220,144 242,148"/>
+          <!-- 4 軟口蓋と口蓋垂 -->
+          <path data-step="3" d="M242,148 C258,150 272,162 278,178 C282,190 281,200 275,201 C269,201 266,190 260,180 C254,170 248,164 242,160"/>
+          <!-- 5 咽頭壁 -->
+          <path data-step="4" d="M306,140 C312,170 314,210 313,250 C312,290 310,320 308,350"/>
+          <!-- 6 下唇・下の歯・下あご -->
+          <path data-step="5" d="M112,188 C102,190 96,196 98,204 C100,212 108,214 112,220 C108,232 104,244 106,256 C108,266 116,272 128,276 C160,284 200,290 232,296"/>
+          <path data-step="5" d="M130,230 C128,222 126,214 124,206 C128,202 133,202 136,204 C137,212 138,220 138,228"/>
+          <!-- 7 舌 -->
+          <path data-step="6" d="M140,214 C150,204 160,196 172,190 C196,178 228,176 252,190 C268,200 278,218 282,240 C286,262 286,282 282,300"/>
+          <path data-step="6" d="M140,214 C142,224 148,232 158,236 C180,246 205,260 225,282"/>
+          <!-- 8 喉頭蓋と喉頭 -->
+          <path data-step="7" d="M282,308 C286,292 292,278 300,264 C304,272 302,292 292,316"/>
+          <path data-step="7" d="M232,296 C244,316 252,336 254,360 C255,380 254,400 252,420"/>
+          <path data-step="7" d="M308,350 C306,370 304,395 302,420"/>
+          <path data-step="7" d="M254,368 L283,371 M291,372 L303,372"/>
+        </g>
+        <g id="labels">
+          <text class="lbl" data-step="0" x="196" y="120">鼻腔</text>
+          <line class="lead" data-step="1" x1="66" y1="172" x2="94" y2="176"/>
+          <text class="lbl" data-step="1" x="38" y="176">上唇</text>
+          <line class="lead" data-step="1" x1="66" y1="196" x2="120" y2="196"/>
+          <text class="lbl" data-step="1" x="38" y="200">前歯</text>
+          <text class="lbl" data-step="2" x="152" y="178">歯茎</text>
+          <text class="lbl" data-step="2" x="192" y="167">硬口蓋</text>
+          <line class="lead" data-step="3" x1="326" y1="170" x2="268" y2="174"/>
+          <text class="lbl" data-step="3" x="330" y="174">軟口蓋</text>
+          <line class="lead" data-step="3" x1="326" y1="200" x2="280" y2="198"/>
+          <text class="lbl" data-step="3" x="330" y="204">口蓋垂</text>
+          <line class="lead" data-step="4" x1="326" y1="240" x2="314" y2="240"/>
+          <text class="lbl" data-step="4" x="330" y="244">咽頭壁</text>
+          <line class="lead" data-step="5" x1="66" y1="222" x2="98" y2="208"/>
+          <text class="lbl" data-step="5" x="38" y="226">下唇</text>
+          <text class="lbl" data-step="5" x="150" y="306">下あご</text>
+          <text class="lbl" data-step="6" x="200" y="220">舌</text>
+          <line class="lead" data-step="7" x1="326" y1="284" x2="300" y2="282"/>
+          <text class="lbl" data-step="7" x="330" y="288">喉頭蓋</text>
+          <line class="lead" data-step="7" x1="326" y1="372" x2="304" y2="372"/>
+          <text class="lbl" data-step="7" x="330" y="376">声帯</text>
+          <text class="lbl" data-step="7" x="266" y="408">喉頭</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="now" aria-live="polite">
+        <div class="meta"><span id="count">1 / 8</span><span class="chip" id="kind">固定部分</span></div>
+        <h2 id="title"></h2>
+        <ul id="tips"></ul>
+      </div>
+      <div class="controls">
+        <button type="button" id="prev" aria-label="前の手順">◀ 前へ</button>
+        <button type="button" id="play" class="primary">一時停止</button>
+        <button type="button" id="next" aria-label="次の手順">次へ ▶</button>
+        <button type="button" id="restart">最初から</button>
+      </div>
+      <div class="opts">
+        <label><input type="checkbox" id="showGuide" checked> 完成図を薄く表示</label>
+        <label>速さ
+          <select id="speed">
+            <option value="1.6">ゆっくり</option>
+            <option value="1" selected>ふつう</option>
+            <option value="0.6">はやい</option>
+          </select>
+        </label>
+      </div>
+      <ol class="steps" id="list"></ol>
+      <p class="note">図は鼻音や呼吸のときのように軟口蓋が下がった状態です。口音を描くときは、軟口蓋を持ち上げて咽頭壁に接するように描き換えます。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS=[
+  {t:"鼻と鼻腔",k:"fixed",tips:["最初に顔の輪郭を描いて、図全体の大きさと位置を決めます。","鼻先は唇よりはっきり前に出します。","鼻腔は口の上に横長に広がる空間です。底の線は次に描く硬口蓋とほぼ平行にします。"]},
+  {t:"上唇と上の歯",k:"fixed",tips:["上唇は前歯より前に、ふっくらと描きます。","前歯は少し前に傾けると自然に見えます。","唇と歯の間には少しすき間を残します。"]},
+  {t:"歯茎と硬口蓋",k:"fixed",tips:["前歯の裏から、歯茎の小さな出っ張りをはっきり描きます。[t] [d] [n] の調音位置になる大事な目印です。","そこから硬口蓋が、ゆるい弧を描いてほぼ水平に奥へ続きます。"]},
+  {t:"軟口蓋と口蓋垂",k:"fixed",tips:["硬口蓋の続きとして、厚みのある軟口蓋を垂らします。","先端の口蓋垂は、舌の奥の真上あたりに来るようにします。","厳密には動く部分ですが、型紙ではここで描いておくと後が楽です。"]},
+  {t:"咽頭壁",k:"fixed",tips:["鼻腔の奥から、喉の後ろの壁をほぼ垂直に下ろします。","硬口蓋とおよそ直角になるようにすると、声道の曲がり方が自然になります。","ここまでが形の変わらない部分です。この状態でコピーしておくと型紙になります。"]},
+  {t:"下唇・下の歯・下あご",k:"move",tips:["下唇は上唇の真下に描き、下の前歯は上の前歯の少し後ろに置きます。","あごの線は、喉頭の前のあたりまで続けます。","[p] [m] などでは唇を閉じ、母音によっては口を開くので、音ごとに描き換える部分です。"]},
+  {t:"舌",k:"move",tips:["舌は線ではなく大きな塊です。口の中のほとんどを占めるように描きます。","舌先は下の前歯の裏、舌の背は硬口蓋に沿って盛り上がり、舌根は喉の奥まで下ろします。","音によって一番大きく形が変わる部分なので、最後のほうに描きます。"]},
+  {t:"喉頭蓋と声帯",k:"move",tips:["舌根の後ろに、葉のような形の喉頭蓋を描きます。","その下が喉頭で、中に声帯があります。","有声音では声帯の位置に波線を添えるなど、印で区別します。"]}
+];
+const N=STEPS.length;
+const paths=[...document.querySelectorAll('#drawing path')];
+const labels=[...document.querySelectorAll('#labels [data-step]')];
+const guide=document.getElementById('guide');
+paths.forEach(p=>{p.setAttribute('pathLength','1');p.classList.add('stroke');
+  const g=p.cloneNode();g.removeAttribute('class');g.removeAttribute('pathLength');guide.appendChild(g)});
+
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cur=0, playing=!reduce, timer=null, anims=[];
+const $=id=>document.getElementById(id);
+
+// 手順リスト
+STEPS.forEach((s,i)=>{const li=document.createElement('li');
+  li.innerHTML=`<button type="button"><span class="n">${i+1}</span><span class="t">${s.t}</span><span class="k">${s.k==='fixed'?'固定':'可動'}</span></button>`;
+  li.querySelector('button').addEventListener('click',()=>{stop();go(i)});
+  $('list').appendChild(li)});
+
+function speed(){return parseFloat($('speed').value)}
+function clear(){anims.forEach(a=>a.cancel());anims=[];clearTimeout(timer)}
+
+function go(i){
+  clear(); cur=i;
+  const sp=speed(); let total=0;
+  const mine=paths.filter(p=>+p.dataset.step===i);
+  paths.forEach(p=>{const s=+p.dataset.step;
+    p.classList.toggle('current',s===i);
+    p.style.strokeDashoffset = s<i?0:1});
+  let delay=0;
+  mine.forEach(p=>{
+    const len=p.getTotalLength(); const d=reduce?0:Math.max(500,len*9)*sp;
+    if(d===0){p.style.strokeDashoffset=0;return}
+    const a=p.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:d,delay,easing:'ease-in-out',fill:'forwards'});
+    a.onfinish=()=>{p.style.strokeDashoffset=0};
+    anims.push(a); delay+=d+120*sp; total=delay});
+  labels.forEach(l=>{const s=+l.dataset.step;l.classList.toggle('on',s<=i);l.classList.toggle('cur',s===i&&l.tagName==='text')});
+  // パネル
+  const s=STEPS[i];
+  $('count').textContent=`${i+1} / ${N}`;
+  $('title').textContent=s.t;
+  const k=$('kind');k.textContent=s.k==='fixed'?'固定部分':'動く部分';k.className='chip '+(s.k==='fixed'?'fixed':'move');
+  $('tips').innerHTML=s.tips.map(t=>`<li>${t}</li>`).join('');
+  [...$('list').children].forEach((li,j)=>{li.classList.toggle('done',j<i);li.classList.toggle('cur',j===i)});
+  if(playing){timer=setTimeout(()=>{ if(i<N-1) go(i+1); else finish(); }, total+2200*sp)}
+}
+function finish(){playing=false;paths.forEach(p=>p.classList.remove('current'));
+  labels.forEach(l=>l.classList.remove('cur'));$('play').textContent='もう一度再生'}
+function stop(){playing=false;clearTimeout(timer);$('play').textContent='再生'}
+
+$('play').addEventListener('click',()=>{
+  if(playing){stop();return}
+  playing=true;$('play').textContent='一時停止';
+  go(cur===N-1&&!paths.some(p=>p.classList.contains('current'))?0:cur)});
+$('next').addEventListener('click',()=>{stop();go(Math.min(N-1,cur+1))});
+$('prev').addEventListener('click',()=>{stop();go(Math.max(0,cur-1))});
+$('restart').addEventListener('click',()=>{playing=true;$('play').textContent='一時停止';go(0)});
+$('showGuide').addEventListener('change',e=>{guide.hidden=!e.target.checked});
+if(!playing) $('play').textContent='再生';
+go(0);
+</script>
+
+</body></html>
